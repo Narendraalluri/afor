@@ -7,7 +7,18 @@
 build/
 # If you're building an application, you may want to check-in your pubspec.lock
 pubspec.lock
+.metadata
+.DS_Store
+.flutter-plugins
 
 # Directory created by dartdoc
 # If you don't generate documentation locally you can remove this line.
 doc/api/
+
+.idea/
+.vscode/
+
+ios/
+android/
+spellhelp_android.iml
+spellhelp.iml
