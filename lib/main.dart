@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'SpellingBuilder.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 void main() => runApp(new SpellHelperApp());
 
@@ -76,42 +77,35 @@ class SpellHelperHome extends StatelessWidget {
     Widget build(BuildContext context) {
       return Scaffold(
         appBar: AppBar(
-          title: Text('Spell Helper')
+          title: Text('A For....')
         ),
-        body: Column(
-          children: <Widget>[
-            new RaisedButton(
-              child: const Text('Start Learning'),
-              color: Theme.of(context).accentColor,
-              elevation: 4.0,
-              splashColor: Colors.blueGrey,
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => SpellingList(list: ['Cat', 'Dog', 'This'])),
+        body:  new StreamBuilder(
+          stream: Firestore.instance.collection('Lists').snapshots(),
+          builder: (context, snapshot) {
+            if (!snapshot.hasData) return Text('Loading...');
+            return new ListView.builder(
+              itemCount: snapshot.data.documents.length,
+              padding: EdgeInsets.only(top: 10.0),
+              itemBuilder: (context, index) {
+                DocumentSnapshot ds = snapshot.data.documents[index];
+                return Container(
+                  padding: EdgeInsets.all(10.0),
+                  child: RaisedButton(
+                    child: new Text(" ${ds['name']}", style: TextStyle(color: Colors.white),),
+                    color: Theme.of(context).accentColor,
+                    elevation: 4.0,
+                    splashColor: Colors.blueGrey,
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => SpellingList(list: new List<String>.from(ds['values']))),
+                      );
+                    },
+                  ),
                 );
-              },
-            ),
-            new RaisedButton(
-              child: const Text('Show Lists'),
-              color: Theme.of(context).accentColor,
-              elevation: 4.0,
-              splashColor: Colors.blueGrey,
-              onPressed: () {
-                // Perform some action
-              },
-            ),
-            new RaisedButton(
-              child: const Text('Create New List'),
-              color: Theme.of(context).accentColor,
-              elevation: 4.0,
-              splashColor: Colors.blueGrey,
-              onPressed: () {
-                // Perform some action
-              },
-            ),
-          ],
-        )
+              }
+            );
+          }),
         
       );
     }
