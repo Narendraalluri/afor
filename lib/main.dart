@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'SpellingBuilder.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'dart:math';
 
 void main() => runApp(new SpellHelperApp());
 
@@ -32,7 +33,24 @@ class _SpellingListState extends State<SpellingList> {
    @override
     Widget build(BuildContext context) {
       print(widget.list[currentIndex]);
-      return SpellingBuilder(index: currentIndex, total: widget.list.length,word: widget.list[currentIndex], onComplete: nextPage);
+      print(getOptions(widget.list[currentIndex]));
+      return SpellingBuilder(index: currentIndex, total: widget.list.length,word: widget.list[currentIndex], onComplete: nextPage, options: getOptions(widget.list[currentIndex]));
+    }
+
+    getOptions(String word) {
+      String allAlphabets = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+      for(int i=0; i<word.length; i++) {
+        allAlphabets.replaceAll(word[i], '');
+      }
+      final _random = new Random();
+      String options = word.toUpperCase();
+      for(int i=0; i<word.length; i++) {
+        var element = allAlphabets[_random.nextInt(allAlphabets.length)];
+        options = options + element;
+      }
+      List<String> optionList = options.split('');
+      optionList.shuffle();
+      return optionList.join() ;
     }
 
   nextPage() {
