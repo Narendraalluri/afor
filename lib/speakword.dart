@@ -45,7 +45,6 @@ void didUpdateWidget (SpeakWord oldWidget) {
    @override
   void initState() {
     super.initState();
-    print('didChangeDependencies');
     speak();
   }
 

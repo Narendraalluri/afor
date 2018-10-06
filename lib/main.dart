@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'SpellingBuilder.dart';
+import 'CreateList.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'dart:math';
 
@@ -9,7 +10,6 @@ class SpellHelperApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
       return new MaterialApp(
-        title: 'Spell Helper',
         home: SpellHelperHome(),
       );
   }
@@ -32,8 +32,6 @@ class _SpellingListState extends State<SpellingList> {
 
    @override
     Widget build(BuildContext context) {
-      print(widget.list[currentIndex]);
-      print(getOptions(widget.list[currentIndex]));
       return SpellingBuilder(index: currentIndex, total: widget.list.length,word: widget.list[currentIndex], onComplete: nextPage, options: getOptions(widget.list[currentIndex]));
     }
 
@@ -90,22 +88,18 @@ class Results extends StatelessWidget {
     }
 }
 
-class SpellHelperHome extends StatelessWidget {
+class SpellingLists extends StatelessWidget {
+  SpellingLists({Key key, this.lists}) : super(key: key);
+
+  final List lists;
+
   @override
     Widget build(BuildContext context) {
-      return Scaffold(
-        appBar: AppBar(
-          title: Text('A For....')
-        ),
-        body:  new StreamBuilder(
-          stream: Firestore.instance.collection('Lists').snapshots(),
-          builder: (context, snapshot) {
-            if (!snapshot.hasData) return Text('Loading...');
-            return new ListView.builder(
-              itemCount: snapshot.data.documents.length,
+      return new ListView.builder(
+              itemCount: lists.length,
               padding: EdgeInsets.only(top: 10.0),
               itemBuilder: (context, index) {
-                DocumentSnapshot ds = snapshot.data.documents[index];
+                DocumentSnapshot ds = lists[index];
                 return Container(
                   padding: EdgeInsets.all(10.0),
                   child: RaisedButton(
@@ -123,8 +117,33 @@ class SpellHelperHome extends StatelessWidget {
                 );
               }
             );
+    }
+}
+
+class SpellHelperHome extends StatelessWidget {
+  @override
+    Widget build(BuildContext context) {
+      return Scaffold(
+        appBar: AppBar(
+          title: Text('A For....')
+        ),
+        body:  StreamBuilder(
+          stream: Firestore.instance.collection('Lists').snapshots(),
+          builder: (context, snapshot) {
+            if (!snapshot.hasData) return Text('Loading...');
+            return SpellingLists(lists: snapshot.data.documents);
           }),
-        
+        floatingActionButton: Container(
+          child: FloatingActionButton(
+            onPressed: () {
+              Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => CreateList()),
+                  );
+            },
+            child:  Icon(Icons.add),
+          ),
+        ),
       );
     }
 } 
