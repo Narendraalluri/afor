@@ -34,9 +34,10 @@ class SpellHelperHome extends StatelessWidget {
 
 
 class SpellingList extends StatefulWidget {
-  SpellingList({Key key, this.list}) : super(key: key);
+  SpellingList({Key key, this.list, this.name}) : super(key: key);
 
   final List<String> list;
+  final String name;
 
   @override
   _SpellingListState createState() => _SpellingListState();
@@ -48,6 +49,7 @@ class _SpellingListState extends State<SpellingList> {
   @override
   Widget build(BuildContext context) {
     return SpellingBuilder(
+        listName: widget.name,
         index: currentIndex,
         total: widget.list.length,
         word: widget.list[currentIndex],
@@ -79,29 +81,12 @@ class _SpellingListState extends State<SpellingList> {
     } else {
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => Results()),
+        MaterialPageRoute(builder: (context) => SpellHelperHome()),
       );
     }
   }
 }
 
-class Results extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(title: Text('Spell Helper - Results')),
-        body: Column(
-          children: <Widget>[
-            new RaisedButton(
-                child: const Text('See Results'),
-                color: Theme.of(context).accentColor,
-                elevation: 4.0,
-                splashColor: Colors.blueGrey,
-                onPressed: null),
-          ],
-        ));
-  }
-}
 
 class SpellingLists extends StatelessWidget {
   SpellingLists({Key key, this.lists}) : super(key: key);
@@ -193,6 +178,7 @@ void _confirmDelete(BuildContext context, String id) {
                   context,
                   MaterialPageRoute(
                       builder: (context) => SpellingList(
+                          name: ds['name'],
                           list: new List<String>.from(ds['values']))),
                 );
               });

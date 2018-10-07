@@ -7,6 +7,7 @@ import 'dart:async';
 class SpellingBuilder extends StatefulWidget {
   SpellingBuilder(
       {Key key,
+      this.listName,
       this.word,
       this.onComplete,
       this.index,
@@ -14,6 +15,7 @@ class SpellingBuilder extends StatefulWidget {
       this.options})
       : super(key: key);
 
+  final String listName;
   final Function onComplete;
   final String word;
   final int index;
@@ -47,12 +49,26 @@ class _SpellingBuilderState extends State<SpellingBuilder> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(title: Text('Spell Helper')),
+        appBar: AppBar(
+          title: Column(
+            children: <Widget>[
+              Text(widget.listName),
+              Container(
+                margin: EdgeInsets.only(top: 10.0),
+                 child: Text((widget.index + 1).toString() + ' of ' + widget.total.toString(), style: TextStyle(
+                fontWeight: FontWeight.normal,
+                fontSize: 15.0
+              ),
+              )
+              )
+              
+            ],
+          ),
+          ),
         body: Stack(
           children: <Widget>[
             Column(
               children: <Widget>[
-ListIndex(index: widget.index, total: widget.total),
             Row(children: <Widget>[
               Container(
                 padding: const EdgeInsets.only(top: 30.0, left: 30.0),
@@ -136,17 +152,6 @@ ListIndex(index: widget.index, total: widget.total),
     // if (newWord == widget.word.toUpperCase()) {
     //   widget.onComplete();
     // }
-  }
-}
-
-class ListIndex extends StatelessWidget {
-  ListIndex({Key key, this.index, this.total}) : super(key: key);
-  final int index;
-  final int total;
-
-  @override
-  Widget build(BuildContext context) {
-    return Text((index + 1).toString() + ' of ' + total.toString());
   }
 }
 
