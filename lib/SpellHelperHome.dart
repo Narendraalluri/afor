@@ -32,7 +32,6 @@ class SpellHelperHome extends StatelessWidget {
   }
 }
 
-
 class SpellingList extends StatefulWidget {
   SpellingList({Key key, this.list, this.name}) : super(key: key);
 
@@ -87,13 +86,12 @@ class _SpellingListState extends State<SpellingList> {
   }
 }
 
-
 class SpellingLists extends StatelessWidget {
   SpellingLists({Key key, this.lists}) : super(key: key);
 
   final List lists;
 
-void _confirmDelete(BuildContext context, String id) {
+  void _confirmDelete(BuildContext context, String id) {
     // flutter defined function
     showDialog(
       context: context,
@@ -138,7 +136,7 @@ void _confirmDelete(BuildContext context, String id) {
                   child: new ListTile(
                     leading: new CircleAvatar(
                       backgroundColor: Colors.indigoAccent,
-                      child: new Text((index  + 1).toString()),
+                      child: new Text((index + 1).toString()),
                       foregroundColor: Colors.white,
                     ),
                     title: new Text(ds['name']),
@@ -154,12 +152,12 @@ void _confirmDelete(BuildContext context, String id) {
                       print(ds.documentID);
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => EditList(
-                          name: ds['name'],
-                          level: ds['level'],
-                          values: ds['values'],
-                          id: ds.documentID
-                          )),
+                        MaterialPageRoute(
+                            builder: (context) => EditList(
+                                name: ds['name'],
+                                level: ds['level'],
+                                values: ds['values'],
+                                id: ds.documentID)),
                       );
                     },
                   ),

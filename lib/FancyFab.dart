@@ -15,11 +15,10 @@ class _FancyFabState extends State<FancyFab>
   Curve _curve = Curves.easeOut;
   double _fabHeight = 56.0;
 
-
   @override
   initState() {
-    
-  _animationController =  AnimationController(vsync: this, duration: Duration(milliseconds: 500))
+    _animationController =
+        AnimationController(vsync: this, duration: Duration(milliseconds: 500))
           ..addListener(() {
             setState(() {});
           });
@@ -65,7 +64,7 @@ class _FancyFabState extends State<FancyFab>
     isOpened = !isOpened;
   }
 
-   Widget add() {
+  Widget add() {
     return Container(
       child: FloatingActionButton(
         onPressed: null,

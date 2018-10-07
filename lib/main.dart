@@ -11,4 +11,3 @@ class SpellHelperApp extends StatelessWidget {
     );
   }
 }
-
