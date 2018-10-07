@@ -2,22 +2,44 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'SpellHelperHome.dart';
 
-class CreateList extends StatefulWidget {
+class EditList extends StatefulWidget {
+
+  EditList({Key key, this.name, this.level, this.values, this.id}): super(key: key);
+
+  final String name;
+  final String level;
+  final String id;
+  final List<dynamic> values;
+
   @override
-    CreateListState createState() => CreateListState();
+  EditListState createState() => EditListState();
 }
 
-class CreateListState extends State<CreateList> {
+class EditListState extends State<EditList> {
 
   String name;
   String level;
   List<String> words = List.generate(10, (_) => "");
+
+@override
+ initState() {
+   super.initState();
+   setState(() {
+        name = widget.name;
+        level = widget.level;
+        words = List.generate(10, (index) => widget.values[index]);
+
+      });
+ }
 
   List<Widget> getWords() {
     return List<Container>.generate(10, (int index) => 
          Container(
                 margin: EdgeInsets.only(top: 15.0, bottom: 15.0),
                 child: TextField(
+                  controller: TextEditingController(
+                    text: words[index]
+                  ),
                   textAlign: TextAlign.center,
                   textCapitalization: TextCapitalization.characters,
                   decoration: InputDecoration(
@@ -25,7 +47,9 @@ class CreateListState extends State<CreateList> {
                     hintText: 'Enter the word'
                   ),
                   onChanged: (value) {
-                    words[index] = value; 
+                    setState(() {
+                      words[index] = value;             
+                    });
                   },
               ))
     ); 
@@ -37,8 +61,15 @@ class CreateListState extends State<CreateList> {
               Container(
                 margin: EdgeInsets.only(top: 15.0, bottom: 15.0),
                 child: TextField(
+                  controller: TextEditingController(
+                    text: name,
+                  ),
                   onChanged: (value) {
-                    name = value;
+                    print(value);
+                    setState(() {
+                      name = value;          
+                    });
+                   
                   },
                   decoration: InputDecoration(
                     labelText: 'Name',
@@ -52,7 +83,9 @@ class CreateListState extends State<CreateList> {
                 value: level,
                 hint: Text('Select the Level'),
                 onChanged: (value) {
-                    level = value;
+                    setState(() {
+                      level = value;            
+                    });
                   },
                 isDense: true,
                 items: <String>['Very Easy','Easy', 'Intermediate' , 'Hard', 'Very Hard']
@@ -72,7 +105,7 @@ class CreateListState extends State<CreateList> {
       formCells.addAll(getWords());
       return Scaffold(
         appBar: AppBar(
-          title: Text('Create new List')
+          title: Text('Edit List')
         ),
         body: Container(
           margin: EdgeInsets.all(20.0),
@@ -83,21 +116,15 @@ class CreateListState extends State<CreateList> {
         floatingActionButton: Container(
           child: FloatingActionButton(
             onPressed: () {
-              print(name);
-              print(level);
-              print(words);
-              CollectionReference x = Firestore.instance.collection("Lists");
-              Firestore.instance.runTransaction((Transaction tx) async {
-                await x.add({
+              Firestore.instance.collection("Lists").document(widget.id).setData({
                   "level": level,
                   "name": name,
                   "values": words,
                 });
-                Navigator.push(
+              Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => SpellHelperHome()),
                 );
-              });
             },
             child:  Icon(Icons.save),
           ),
