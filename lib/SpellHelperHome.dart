@@ -7,16 +7,15 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 import 'EditList.dart';
 
 class SpellHelperHome extends StatelessWidget {
+  SpellHelperHome({Key key, this.lists, this.userId}) : super(key: key);
+
+  final List lists;
+  final String userId;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text('A For....')),
-      body: StreamBuilder(
-          stream: Firestore.instance.collection('Lists').snapshots(),
-          builder: (context, snapshot) {
-            if (!snapshot.hasData) return Text('Loading...');
-            return SpellingLists(lists: snapshot.data.documents);
-          }),
+      body: SpellingLists(lists: lists, userId: userId),
       floatingActionButton: Container(
         child: FloatingActionButton(
           onPressed: () {
@@ -87,11 +86,12 @@ class _SpellingListState extends State<SpellingList> {
 }
 
 class SpellingLists extends StatelessWidget {
-  SpellingLists({Key key, this.lists}) : super(key: key);
+  SpellingLists({Key key, this.lists, this.userId}) : super(key: key);
 
   final List lists;
+  final String userId;
 
-  void _confirmDelete(BuildContext context, String id) {
+  void _confirmDelete(BuildContext context, String userId, int listIndex) {
     // flutter defined function
     showDialog(
       context: context,
@@ -103,9 +103,23 @@ class SpellingLists extends StatelessWidget {
           actions: <Widget>[
             new FlatButton(
               child: new Text("Delete"),
-              onPressed: () {
-                Firestore.instance.collection("Lists").document(id).delete();
-                Navigator.of(context).pop();
+              onPressed: () async {
+                List newList = new List();
+                lists.asMap().forEach((i, value) {
+                    if(i != listIndex) {
+                      newList.add(value);
+                    }
+                });
+                 await Firestore.instance.collection("UserList").document(userId).updateData({
+                   'lists': newList
+                 });
+                 Navigator.of(context).pop();
+                 Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => SpellHelperHome(lists: newList, userId: userId)),
+                );
+                
+               
               },
             ),
             new FlatButton(
@@ -126,7 +140,7 @@ class SpellingLists extends StatelessWidget {
         itemCount: lists.length,
         padding: EdgeInsets.only(top: 10.0),
         itemBuilder: (context, index) {
-          DocumentSnapshot ds = lists[index];
+          var ds = lists[index];
           return GestureDetector(
               child: new Slidable(
                 delegate: new SlidableDrawerDelegate(),
@@ -149,7 +163,6 @@ class SpellingLists extends StatelessWidget {
                     color: Colors.black45,
                     icon: Icons.edit,
                     onTap: () {
-                      print(ds.documentID);
                       Navigator.push(
                         context,
                         MaterialPageRoute(
@@ -157,7 +170,10 @@ class SpellingLists extends StatelessWidget {
                                 name: ds['name'],
                                 level: ds['level'],
                                 values: ds['values'],
-                                id: ds.documentID)),
+                                listIndex: index,
+                                userId: userId,
+                                lists: lists,
+                                id: index.toString())),
                       );
                     },
                   ),
@@ -166,7 +182,7 @@ class SpellingLists extends StatelessWidget {
                     color: Colors.red,
                     icon: Icons.delete,
                     onTap: () {
-                      _confirmDelete(context, ds.documentID);
+                      _confirmDelete(context, userId, index);
                     },
                   ),
                 ],

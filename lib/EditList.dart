@@ -3,12 +3,15 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'SpellHelperHome.dart';
 
 class EditList extends StatefulWidget {
-  EditList({Key key, this.name, this.level, this.values, this.id})
+  EditList({Key key, this.name, this.level, this.values, this.listIndex, this.userId, this.lists, this.id})
       : super(key: key);
 
   final String name;
   final String level;
   final String id;
+  final String userId;
+  final int listIndex;
+  final List lists;
   final List<dynamic> values;
 
   @override
@@ -109,18 +112,26 @@ class EditListState extends State<EditList> {
         ),
         floatingActionButton: Container(
           child: FloatingActionButton(
-            onPressed: () {
-              Firestore.instance
-                  .collection("Lists")
-                  .document(widget.id)
-                  .setData({
-                "level": level,
-                "name": name,
-                "values": words,
-              });
+            onPressed: () async {
+              List newList = new List();
+                widget.lists.asMap().forEach((i, value) {
+                    if(i != widget.listIndex) {
+                      newList.add(value);
+                    } else {
+                      newList.add({
+                        "level": level,
+                        "name": name,
+                        "order": widget.lists[widget.listIndex]['order'],
+                        "values": words,
+                      });
+                    }
+                });
+              await Firestore.instance.collection("UserList").document(widget.userId).updateData({
+                   'lists': newList
+                 });
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => SpellHelperHome()),
+                MaterialPageRoute(builder: (context) => SpellHelperHome(lists: newList, userId: widget.userId)),
               );
             },
             child: Icon(Icons.save),

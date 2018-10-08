@@ -79,10 +79,25 @@ class _SpellingBuilderState extends State<SpellingBuilder> {
         body: Column(
           children: <Widget>[
             SpellingField(word: selectedWord, onClick: onUnSelect),
-            Divider(
+            Stack(
+                    children: <Widget>[
+                      Divider(
                         height: 100.0,
                         color: Colors.blue,
                       ),
+                      selectedWord.length > 0 ? Positioned(
+                        right: 0.0,
+                        bottom: 40.0,
+                        child:  GestureDetector(
+                          child: const Icon(Icons.cancel),
+                          onTap: () {
+                            onUnSelect(selectedWord.length - 1);
+                          },
+                        ),
+                      ) : Container(),
+                    ],
+                  )
+            ,
             SpellOptions(
                     options: widget.options,
                     selectedIndices: selectedIndices,
