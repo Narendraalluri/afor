@@ -1,9 +1,4 @@
 import 'package:flutter/material.dart';
-import 'dart:async';
-import 'dart:io';
-
-import 'package:firebase_auth/firebase_auth.dart';
-
 import 'LoginScreen.dart';
 
 void main() => runApp(new MyApp());
@@ -28,8 +23,6 @@ class SpellHelperApp extends StatefulWidget {
 
 class SpellHelperAppState extends State<SpellHelperApp> {
 
-    Future<String> _message = Future<String>.value('');
-  TextEditingController _smsCodeController = TextEditingController();
   String verificationId;
   final String testSmsCode = '888888';
   final String testPhoneNumber = '+1 408-555-6969';

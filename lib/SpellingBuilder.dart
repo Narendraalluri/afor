@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';import 'SpeakWord.dart';
 import 'SpeakWord.dart';
 import 'CheckButton.dart';
 import 'utils.dart';
@@ -33,6 +33,8 @@ class _SpellingBuilderState extends State<SpellingBuilder> {
   List<int> selectedIndices = [];
   CHECK_STATUS checkSuccess = CHECK_STATUS.INITIAL;
   bool checkButtonEnable = false;
+  var positions = Map();
+GlobalKey nextPositionKey = GlobalKey();
 
   @mustCallSuper
   @protected
@@ -50,6 +52,8 @@ class _SpellingBuilderState extends State<SpellingBuilder> {
 
   @override
   Widget build(BuildContext context) {
+
+
     return Scaffold(
         floatingActionButton: Stack(
           children: <Widget>[
@@ -57,6 +61,14 @@ class _SpellingBuilderState extends State<SpellingBuilder> {
               top: 90.0,
               right: 8.0,
               child: SpeakWord(word: widget.word),
+            ),
+            Positioned(
+              bottom: - 40.0,
+              right: 10.0,
+              child: CheckButton(
+                      enable: checkButtonEnable,
+                      onTap: onCheckButtonTap,
+                      checkSuccess: checkSuccess),
             )
           ],
         ),
@@ -76,40 +88,29 @@ class _SpellingBuilderState extends State<SpellingBuilder> {
             ],
           ),
         ),
-        body: Column(
-          children: <Widget>[
-            SpellingField(word: selectedWord, onClick: onUnSelect),
-            Stack(
-                    children: <Widget>[
-                      Divider(
-                        height: 100.0,
-                        color: Colors.blue,
-                      ),
-                      selectedWord.length > 0 ? Positioned(
-                        right: 0.0,
-                        bottom: 40.0,
-                        child:  GestureDetector(
-                          child: const Icon(Icons.cancel),
-                          onTap: () {
-                            onUnSelect(selectedWord.length - 1);
-                          },
-                        ),
-                      ) : Container(),
-                    ],
-                  )
-            ,
-            SpellOptions(
-                    options: widget.options,
-                    selectedIndices: selectedIndices,
-                    onUnSelect: onUnSelect,
-                    onUnSelectChar: onUnSelectChar,
-                    onSelect: onSelect),
-            CheckButton(
-                enable: checkButtonEnable,
-                onTap: onCheckButtonTap,
-                checkSuccess: checkSuccess)
-          ],
-        ));
+        body: SingleChildScrollView(
+          
+            child: ConstrainedBox(
+                constraints: BoxConstraints(),
+                child: Column(
+                  children: <Widget>[
+                    SpellingField(word: selectedWord, onClick: onUnSelect, nextPositionKey: nextPositionKey),
+                    Divider(
+                      height: 100.0,
+                      color: Colors.blue,
+                    ),
+                    SpellOptions(
+                        options: widget.options,
+                        selectedIndices: selectedIndices,
+                        positions: positions,
+                        onUnSelect: onUnSelect,
+                        onUnSelectChar: onUnSelectChar,
+                        nextPositionKey: nextPositionKey,
+                        onSelect: onSelect),
+                     
+                  ],
+                ))
+                ));
   }
 
   onCheckButtonTap() {
@@ -154,7 +155,7 @@ class _SpellingBuilderState extends State<SpellingBuilder> {
     });
   }
 
-  onSelect(int index) {
+  onSelect(int index, double left, double bottom) {
     String newWord = selectedWord + widget.options[index];
     if (!checkButtonEnable) {
       setState(() {
@@ -162,11 +163,14 @@ class _SpellingBuilderState extends State<SpellingBuilder> {
         checkButtonEnable = true;
       });
     }
-
+    print(left);
     setState(() {
       selectedIndices.add(index);
       selectedWord = newWord;
+      positions[index] = {
+        'left': left,
+        'bottom': bottom
+      };
     });
   }
 }
-

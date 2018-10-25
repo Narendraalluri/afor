@@ -6,9 +6,11 @@ class SpellOptionItem extends StatefulWidget {
       {Key key,
       this.index,
       this.char,
+      this.position,
       this.isSelected,
       this.onSelect,
       this.onUnSelectChar,
+      this.nextPosition,
       this.onUnSelect})
       : super(key: key);
 
@@ -18,6 +20,8 @@ class SpellOptionItem extends StatefulWidget {
   final Function onSelect;
   final Function onUnSelect;
   final Function onUnSelectChar;
+  final Offset nextPosition;
+  final Map position;
 
   @override
   _SpellOptionItemState createState() => new _SpellOptionItemState();
@@ -31,25 +35,25 @@ class _SpellOptionItemState extends State<SpellOptionItem> with TickerProviderSt
       moveUpAnimation,
       opacityAnimation,
       moveDownAnimation;
+  double left = 0.0, bottom = 0.0, nextLeft = 0.0, nextBottom = 0.0;
   @override
   initState() {
     super.initState();
     bounceAnimationController = new AnimationController(
         vsync: this, duration: Duration(milliseconds: 100));
     moveAnimationController = new AnimationController(
-        vsync: this, duration: Duration(milliseconds: 100));
+        vsync: this, duration: Duration(milliseconds: 1000));
     moveDownAnimationController = new AnimationController(
         vsync: this, duration: Duration(milliseconds: 100));
     bounceAnimation = new Tween(begin: 0.0, end: 10.0).animate(
         new CurvedAnimation(
             parent: bounceAnimationController, curve: Curves.easeOut));
-    moveUpAnimation = new Tween(begin: 0.0, end: 100.0).animate(
-        new CurvedAnimation(
-            parent: moveAnimationController, curve: Curves.easeOut));
+    moveUpAnimation = new Tween(begin: 0.0, end: 1.0).animate(new CurvedAnimation(
+                parent: moveAnimationController, curve: Curves.easeOut));
     moveDownAnimation = new Tween(begin: 100.0, end: 10.0).animate(
         new CurvedAnimation(
             parent: moveAnimationController, curve: Curves.easeOut));
-    opacityAnimation = new Tween(begin: 0.0, end: 1.0).animate(
+    opacityAnimation = new Tween(begin: 0.0, end: 0.5).animate(
         new CurvedAnimation(
             parent: bounceAnimationController, curve: Curves.easeOut));
     bounceAnimation.addListener(() {
@@ -63,6 +67,11 @@ class _SpellOptionItemState extends State<SpellOptionItem> with TickerProviderSt
     });
     opacityAnimation.addListener(() {
       setState(() {});
+    });
+    moveAnimationController.addStatusListener((status) {
+      if(status == AnimationStatus.completed) {
+        widget.onSelect(widget.index, nextLeft, nextBottom);
+      }
     });
     bounceAnimationController.addStatusListener((status) {
       if (status == AnimationStatus.completed) {
@@ -81,12 +90,24 @@ class _SpellOptionItemState extends State<SpellOptionItem> with TickerProviderSt
 
   @override
   Widget build(BuildContext context) {
+    final RenderBox renderBox = context.findRenderObject();
+    if (widget.position != null) {
+      left = widget.position['left'];
+      bottom = widget.position['bottom'];
+    }
+    
+    if (renderBox != null && widget.nextPosition != null) {
+      Offset current = renderBox.localToGlobal(Offset.zero);
+      Offset next = widget.nextPosition;
+      nextLeft = current.dx - next.dx;
+      nextBottom = current.dy - next.dy;
+    }
     return Container(
         padding: const EdgeInsets.all(10.0),
         child: GestureDetector(
             onTap: widget.isSelected
                 ? () => unSelectChar(widget.index)
-                : () => selectChar(widget.index),
+                : () => selectChar(widget.index, nextLeft, nextBottom),
             child: getStack()));
   }
 
@@ -94,6 +115,30 @@ class _SpellOptionItemState extends State<SpellOptionItem> with TickerProviderSt
     return Stack(
       overflow: Overflow.visible,
       children: <Widget>[
+        Positioned(
+            bottom: widget.isSelected ? bottom : moveUpAnimation.value * nextBottom,
+            right: widget.isSelected ? left : moveUpAnimation.value * nextLeft,
+            child: Opacity(
+              opacity: 1.0,
+              child: Container(
+                height: 50.0,
+                width: 50.0,
+                decoration: ShapeDecoration(
+                  shape: CircleBorder(side: BorderSide.none),
+                  color: Colors.pink,
+                ),
+                child: Center(
+                  child: Text(
+                    widget.char,
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 15.0),
+                  )
+                )
+              ),
+            )
+          ),
         Container(
             height: 50.0 + bounceAnimation.value,
             width: 50.0 + bounceAnimation.value,
@@ -108,27 +153,17 @@ class _SpellOptionItemState extends State<SpellOptionItem> with TickerProviderSt
                   color: Colors.white,
                   fontWeight: FontWeight.bold,
                   fontSize: 15.0),
-            ))),
-        Positioned(
-            bottom: moveUpAnimation.value,
-            child: Opacity(
-              opacity: opacityAnimation.value,
-              child: Container(
-                height: 50.0,
-                width: 50.0,
-                decoration: ShapeDecoration(
-                  shape: CircleBorder(side: BorderSide.none),
-                  color: Colors.pink,
-                ),
-              ),
-            ))
+            )
+          )
+        ),
+        
       ],
     );
   }
 
   unSelectChar(index) {
     moveUpAnimation =
-        new Tween(begin: 100.0 + ((index / 4).floor() * 60.0), end: 0.0)
+        new Tween(begin: 400.0 + ((index / 4).floor() * 60.0), end: 0.0)
             .animate(new CurvedAnimation(
                 parent: moveAnimationController, curve: Curves.easeOut));
     moveAnimationController.reverse(from: 100.0 + ((index / 4).floor() * 60.0));
@@ -136,13 +171,8 @@ class _SpellOptionItemState extends State<SpellOptionItem> with TickerProviderSt
     widget.onUnSelectChar(widget.char);
   }
 
-  void selectChar(index) {
-    moveUpAnimation =
-        new Tween(begin: 0.0, end: 100.0 + ((index / 4).floor() * 60.0))
-            .animate(new CurvedAnimation(
-                parent: moveAnimationController, curve: Curves.easeOut));
+  void selectChar(index, left, bottom) {
     bounceAnimationController.forward(from: 0.0);
     moveAnimationController.forward(from: 0.0);
-    widget.onSelect(widget.index);
   }
 }

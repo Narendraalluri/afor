@@ -175,7 +175,7 @@ class _LoginScreen3State extends State<LoginScreen3>
     getUserList(currentUser.uid);
   }
 
-  Widget LoginPage() {
+  Widget loginPage() {
     return new Container(
       height: MediaQuery.of(context).size.height,
       decoration: BoxDecoration(
@@ -504,7 +504,7 @@ class _LoginScreen3State extends State<LoginScreen3>
     );
   }
 
-Widget ResetPasswordPage() {
+Widget resetPasswordPage() {
     return new Container(
       height: MediaQuery.of(context).size.height,
       decoration: BoxDecoration(
@@ -670,7 +670,7 @@ Widget ResetPasswordPage() {
     );
   }
 
-  Widget SignupPage() {
+  Widget signupPage() {
     return new Container(
       height: MediaQuery.of(context).size.height,
       decoration: BoxDecoration(
@@ -972,7 +972,7 @@ Widget ResetPasswordPage() {
         child: PageView(
           controller: _controller,
           physics: new AlwaysScrollableScrollPhysics(),
-          children: <Widget>[SignupPage(), LoginPage(), ResetPasswordPage()],
+          children: <Widget>[signupPage(), loginPage(), resetPasswordPage()],
           scrollDirection: Axis.horizontal,
         )
       );
