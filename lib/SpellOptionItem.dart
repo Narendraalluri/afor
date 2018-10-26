@@ -71,7 +71,6 @@ class _SpellOptionItemState extends State<SpellOptionItem> with TickerProviderSt
       setState(() {});
     });
     moveAnimationController.addStatusListener((status) {
-      print(status);
       if(status == AnimationStatus.completed) {
         widget.onSelect(widget.index, nextLeft, nextBottom);
       }

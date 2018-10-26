@@ -139,8 +139,6 @@ double scrollOffset = 0.0;
   }
 
   onUnSelectChar(String char) {
-    print(char);
-    print(selectedWord.indexOf(char));
     onUnSelect(selectedWord.indexOf(char));
   }
 
@@ -148,7 +146,6 @@ double scrollOffset = 0.0;
     if (index != -1) {
     String newWord =
         selectedWord.substring(0, index) + selectedWord.substring(index + 1);
-    print(newWord);
     if (checkButtonEnable && newWord.length == 0) {
       setState(() {
         checkSuccess = CHECK_STATUS.INITIAL;
@@ -177,8 +174,6 @@ double scrollOffset = 0.0;
       positions.remove(selectedIndices[index]);
       selectedIndices.removeAt(index);
       selectedWord = newWord;
-      print(selectedIndices);
-      print(positions);
     });
     }
     
