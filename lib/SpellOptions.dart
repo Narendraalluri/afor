@@ -37,6 +37,7 @@ class SpellOptions extends StatelessWidget {
                 index: index,
                 char: options[index],
                 position: positions[index],
+                selectedIndices: selectedIndices,
                 isSelected: selectedIndices.contains(index),
                 onUnSelect: onUnSelect,
                 nextPosition: nextPosition,

@@ -6,6 +6,7 @@ class SpellOptionItem extends StatefulWidget {
       {Key key,
       this.index,
       this.char,
+      this.selectedIndices,
       this.position,
       this.isSelected,
       this.onSelect,
@@ -15,6 +16,7 @@ class SpellOptionItem extends StatefulWidget {
       : super(key: key);
 
   final String char;
+  final List<int> selectedIndices;
   final int index;
   final bool isSelected;
   final Function onSelect;
@@ -69,10 +71,9 @@ class _SpellOptionItemState extends State<SpellOptionItem> with TickerProviderSt
       setState(() {});
     });
     moveAnimationController.addStatusListener((status) {
+      print(status);
       if(status == AnimationStatus.completed) {
         widget.onSelect(widget.index, nextLeft, nextBottom);
-      } else if (status == AnimationStatus.dismissed) {
-         widget.onUnSelectChar(widget.char);
       }
     });
     
@@ -166,7 +167,7 @@ class _SpellOptionItemState extends State<SpellOptionItem> with TickerProviderSt
 
   unSelectChar(index) {
     moveAnimationController.reverse(from: 1.0);
-    widget.onUnSelectChar(widget.char);
+    widget.onUnSelect(widget.selectedIndices.indexOf(index));
   }
 
   selectChar(index, left, bottom) {
