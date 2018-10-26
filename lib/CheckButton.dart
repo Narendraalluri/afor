@@ -45,7 +45,6 @@ class _CheckButtonState extends State<CheckButton>
   }
 
   checkSpelling() async {
-    print('start animation');
     widget.onTap();
     await buttonAnimationController.forward();
     await checkMarkAnimationController.forward();

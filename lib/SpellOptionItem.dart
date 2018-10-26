@@ -69,7 +69,6 @@ class _SpellOptionItemState extends State<SpellOptionItem> with TickerProviderSt
       setState(() {});
     });
     moveAnimationController.addStatusListener((status) {
-      print(status);
       if(status == AnimationStatus.completed) {
         widget.onSelect(widget.index, nextLeft, nextBottom);
       } else if (status == AnimationStatus.dismissed) {
@@ -109,8 +108,6 @@ class _SpellOptionItemState extends State<SpellOptionItem> with TickerProviderSt
   
 
   Widget getStack() {
-    print(widget.isSelected);
-    print(left);
     return Stack(
       overflow: Overflow.visible,
       children: <Widget>[
@@ -168,7 +165,6 @@ class _SpellOptionItemState extends State<SpellOptionItem> with TickerProviderSt
   }
 
   unSelectChar(index) {
-    print("sd");
     moveAnimationController.reverse(from: 1.0);
     widget.onUnSelectChar(widget.char);
   }

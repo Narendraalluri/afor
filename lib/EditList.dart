@@ -63,7 +63,6 @@ class EditListState extends State<EditList> {
             text: name,
           ),
           onChanged: (value) {
-            print(value);
             setState(() {
               name = value;
             });

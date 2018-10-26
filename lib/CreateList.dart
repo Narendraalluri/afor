@@ -81,9 +81,6 @@ class CreateListState extends State<CreateList> {
         floatingActionButton: Container(
           child: FloatingActionButton(
             onPressed: () {
-              print(name);
-              print(level);
-              print(words);
               CollectionReference x = Firestore.instance.collection("Lists");
               Firestore.instance.runTransaction((Transaction tx) async {
                 await x.add({

@@ -49,7 +49,6 @@ double scrollOffset = 0.0;
  @override
   void initState() {
     controller.addListener(() {
-      // always prints "scrolling = true"
       setState(() {
               scrollOffset = controller.position.pixels;
             });
@@ -144,7 +143,6 @@ double scrollOffset = 0.0;
   }
 
   onUnSelect(int index) {
-    print('onUnSelect ' + index.toString());
     if (index != -1) {
     String newWord =
         selectedWord.substring(0, index) + selectedWord.substring(index + 1);

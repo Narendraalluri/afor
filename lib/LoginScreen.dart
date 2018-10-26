@@ -84,9 +84,7 @@ class _LoginScreen3State extends State<LoginScreen3>
       return;
     }
     try {
-      print('Logging in');
       FirebaseUser currentUser = await _auth.signInWithEmailAndPassword(email: loginEmail, password: loginPassword);
-      print('Logging successful ' + currentUser.uid);
       getUserList(currentUser.uid);
     } catch(e) {
       setState(() {
@@ -128,7 +126,6 @@ class _LoginScreen3State extends State<LoginScreen3>
     DocumentReference userQuery = Firestore.instance.collection('UserList')
         .document(uid);
       userQuery.get().then((data) async { 
-          print(data);
           if (!data.exists) {
             List lists = documents.documents.map((DocumentSnapshot document) {
                   return {
@@ -149,14 +146,12 @@ class _LoginScreen3State extends State<LoginScreen3>
               context,
               MaterialPageRoute(builder: (context) => SpellHelperHome(lists: userLists, userId: uid,)),
             );
-            print('done');
           } else {
             userLists = data['lists'];
             Navigator.push(
               context,
               MaterialPageRoute(builder: (context) => SpellHelperHome(lists: userLists, userId: uid,)),
             );
-            print(data);
           }
       });
   }
