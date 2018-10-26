@@ -37,6 +37,8 @@ class _SpellingBuilderState extends State<SpellingBuilder> {
   GlobalKey nextPositionKey = GlobalKey();
   final ScrollController controller = ScrollController();
   double scrollOffset = 0.0;
+  int unSelectIndex = -1;
+  StreamController<String> streamController = new StreamController.broadcast();
 
   @mustCallSuper
   @protected
@@ -146,7 +148,9 @@ class _SpellingBuilderState extends State<SpellingBuilder> {
                       Container(
                         child: Container(
                             child: GestureDetector(
-                          onTap: () {},
+                          onTap: () {
+                            onUnSelectLast(selectedWord.length - 1);
+                          },
                           child: Container(
                             child: Icon(Icons.backspace),
                           ),
@@ -155,10 +159,12 @@ class _SpellingBuilderState extends State<SpellingBuilder> {
                     ],
                   ),
                   SpellOptions(
+                    streamController: streamController,
                       scrollOffset: scrollOffset,
                       options: widget.options,
                       selectedIndices: selectedIndices,
                       positions: positions,
+                      unSelectIndex: unSelectIndex,
                       onUnSelect: onUnSelect,
                       onUnSelectChar: onUnSelectChar,
                       nextPositionKey: nextPositionKey,
@@ -192,7 +198,12 @@ class _SpellingBuilderState extends State<SpellingBuilder> {
     onUnSelect(selectedWord.indexOf(char));
   }
 
+  onUnSelectLast(int index) {
+    streamController.add(index.toString());
+  }
+
   onUnSelect(int index) {
+    print(index);
     if (index != -1) {
       String newWord =
           selectedWord.substring(0, index) + selectedWord.substring(index + 1);
@@ -222,6 +233,7 @@ class _SpellingBuilderState extends State<SpellingBuilder> {
           }
         }
         positions.remove(selectedIndices[index]);
+        print(positions);
         selectedIndices.removeAt(index);
         selectedWord = newWord;
       });

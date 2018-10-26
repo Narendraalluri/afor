@@ -1,12 +1,15 @@
 
 import 'package:flutter/material.dart';
 import 'SpellOptionItem.dart';
+import 'dart:async';
 
 class SpellOptions extends StatelessWidget {
   SpellOptions(
       {Key key,
       this.scrollOffset,
+      this.streamController,
       this.options,
+      this.unSelectIndex,
       this.selectedIndices,
       this.positions,
       this.onSelect,
@@ -15,6 +18,8 @@ class SpellOptions extends StatelessWidget {
       this.onUnSelect})
       : super(key: key);
 
+  final StreamController<String> streamController;
+  final int unSelectIndex;
   final String options;
   final double scrollOffset;
   final List<int> selectedIndices;
@@ -35,6 +40,8 @@ class SpellOptions extends StatelessWidget {
   getItem(int index,  Offset nextPosition) {
     return SpellOptionItem(
                 index: index,
+                streamController: streamController,
+                unSelectIndex: unSelectIndex,
                 char: options[index],
                 position: positions[index],
                 selectedIndices: selectedIndices,

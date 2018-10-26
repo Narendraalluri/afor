@@ -1,11 +1,14 @@
 
 import 'package:flutter/material.dart';
+import 'dart:async';
 
 class SpellOptionItem extends StatefulWidget {
   SpellOptionItem(
       {Key key,
       this.index,
+      this.streamController,
       this.char,
+      this.unSelectIndex,
       this.selectedIndices,
       this.position,
       this.isSelected,
@@ -15,9 +18,11 @@ class SpellOptionItem extends StatefulWidget {
       this.onUnSelect})
       : super(key: key);
 
+  final StreamController<String> streamController;
   final String char;
   final List<int> selectedIndices;
   final int index;
+  final int unSelectIndex;
   final bool isSelected;
   final Function onSelect;
   final Function onUnSelect;
@@ -41,6 +46,14 @@ class _SpellOptionItemState extends State<SpellOptionItem> with TickerProviderSt
   @override
   initState() {
     super.initState();
+    widget.streamController.stream.listen((data) {
+      if (widget.index == widget.selectedIndices[int.parse(data)]) {
+        moveAnimationController.reverse(from: 1.0);
+        widget.onUnSelect(widget.selectedIndices.indexOf(widget.index));
+      }
+    }, onDone: () {
+    }, onError: (error) {
+    });
     bounceAnimationController = new AnimationController(
         vsync: this, duration: Duration(milliseconds: 100));
     moveAnimationController = new AnimationController(
@@ -75,7 +88,7 @@ class _SpellOptionItemState extends State<SpellOptionItem> with TickerProviderSt
         widget.onSelect(widget.index, nextLeft, nextBottom);
       }
     });
-    
+     
   }
 
   @override
@@ -88,6 +101,7 @@ class _SpellOptionItemState extends State<SpellOptionItem> with TickerProviderSt
 
   @override
   Widget build(BuildContext context) {
+   
     final RenderBox renderBox = context.findRenderObject();
     if (widget.position != null) {
       left = widget.position['left'];
