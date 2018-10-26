@@ -42,7 +42,7 @@ class _SpellOptionItemState extends State<SpellOptionItem> with TickerProviderSt
     bounceAnimationController = new AnimationController(
         vsync: this, duration: Duration(milliseconds: 100));
     moveAnimationController = new AnimationController(
-        vsync: this, duration: Duration(milliseconds: 1000));
+        vsync: this, duration: Duration(milliseconds: 300));
     moveDownAnimationController = new AnimationController(
         vsync: this, duration: Duration(milliseconds: 100));
     bounceAnimation = new Tween(begin: 0.0, end: 10.0).animate(
@@ -69,15 +69,14 @@ class _SpellOptionItemState extends State<SpellOptionItem> with TickerProviderSt
       setState(() {});
     });
     moveAnimationController.addStatusListener((status) {
+      print(status);
       if(status == AnimationStatus.completed) {
         widget.onSelect(widget.index, nextLeft, nextBottom);
+      } else if (status == AnimationStatus.dismissed) {
+         widget.onUnSelectChar(widget.char);
       }
     });
-    bounceAnimationController.addStatusListener((status) {
-      if (status == AnimationStatus.completed) {
-        bounceAnimationController.reverse();
-      }
-    });
+    
   }
 
   @override
@@ -104,14 +103,14 @@ class _SpellOptionItemState extends State<SpellOptionItem> with TickerProviderSt
     }
     return Container(
         padding: const EdgeInsets.all(10.0),
-        child: GestureDetector(
-            onTap: widget.isSelected
-                ? () => unSelectChar(widget.index)
-                : () => selectChar(widget.index, nextLeft, nextBottom),
-            child: getStack()));
+        child: getStack());
   }
 
+  
+
   Widget getStack() {
+    print(widget.isSelected);
+    print(left);
     return Stack(
       overflow: Overflow.visible,
       children: <Widget>[
@@ -120,7 +119,9 @@ class _SpellOptionItemState extends State<SpellOptionItem> with TickerProviderSt
             right: widget.isSelected ? left : moveUpAnimation.value * nextLeft,
             child: Opacity(
               opacity: 1.0,
-              child: Container(
+              child: InkWell(
+                onTap: () => unSelectChar(widget.index),
+                child: Container(
                 height: 50.0,
                 width: 50.0,
                 decoration: ShapeDecoration(
@@ -136,12 +137,13 @@ class _SpellOptionItemState extends State<SpellOptionItem> with TickerProviderSt
                         fontSize: 15.0),
                   )
                 )
-              ),
+              )
+              ) ,
             )
           ),
-        Container(
-            height: 50.0 + bounceAnimation.value,
-            width: 50.0 + bounceAnimation.value,
+        GestureDetector(child: Container(
+            height: 50.0,
+            width: 50.0,
             decoration: ShapeDecoration(
               shape: CircleBorder(side: BorderSide.none),
               color: widget.isSelected ? Colors.grey : Colors.red,
@@ -156,23 +158,22 @@ class _SpellOptionItemState extends State<SpellOptionItem> with TickerProviderSt
             )
           )
         ),
+        onTap: widget.isSelected
+                ? () => unSelectChar(widget.index)
+                : () => selectChar(widget.index, nextLeft, nextBottom),
+                ) ,
         
       ],
     );
   }
 
   unSelectChar(index) {
-    moveUpAnimation =
-        new Tween(begin: 400.0 + ((index / 4).floor() * 60.0), end: 0.0)
-            .animate(new CurvedAnimation(
-                parent: moveAnimationController, curve: Curves.easeOut));
-    moveAnimationController.reverse(from: 100.0 + ((index / 4).floor() * 60.0));
-    bounceAnimationController.reverse(from: 1.0);
+    print("sd");
+    moveAnimationController.reverse(from: 1.0);
     widget.onUnSelectChar(widget.char);
   }
 
-  void selectChar(index, left, bottom) {
-    bounceAnimationController.forward(from: 0.0);
+  selectChar(index, left, bottom) {
     moveAnimationController.forward(from: 0.0);
   }
 }

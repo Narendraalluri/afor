@@ -35,6 +35,8 @@ class _SpellingBuilderState extends State<SpellingBuilder> {
   bool checkButtonEnable = false;
   var positions = Map();
 GlobalKey nextPositionKey = GlobalKey();
+final ScrollController controller = ScrollController();
+double scrollOffset = 0.0;
 
   @mustCallSuper
   @protected
@@ -44,9 +46,14 @@ GlobalKey nextPositionKey = GlobalKey();
     selectedWord = '';
   }
 
-  @mustCallSuper
-  @protected
+ @override
   void initState() {
+    controller.addListener(() {
+      // always prints "scrolling = true"
+      setState(() {
+              scrollOffset = controller.position.pixels;
+            });
+    });
     super.initState();
   }
 
@@ -89,7 +96,7 @@ GlobalKey nextPositionKey = GlobalKey();
           ),
         ),
         body: SingleChildScrollView(
-          
+            controller: controller,
             child: ConstrainedBox(
                 constraints: BoxConstraints(),
                 child: Column(
@@ -100,6 +107,7 @@ GlobalKey nextPositionKey = GlobalKey();
                       color: Colors.blue,
                     ),
                     SpellOptions(
+                      scrollOffset: scrollOffset,
                         options: widget.options,
                         selectedIndices: selectedIndices,
                         positions: positions,
@@ -136,6 +144,8 @@ GlobalKey nextPositionKey = GlobalKey();
   }
 
   onUnSelect(int index) {
+    print('onUnSelect ' + index.toString());
+    if (index != -1) {
     String newWord =
         selectedWord.substring(0, index) + selectedWord.substring(index + 1);
     if (checkButtonEnable && newWord.length == 0) {
@@ -149,10 +159,26 @@ GlobalKey nextPositionKey = GlobalKey();
         checkButtonEnable = true;
       });
     }
+    
     setState(() {
+      for (var i = selectedIndices.length - 1; i > index ;i--){
+        positions[selectedIndices[i]] = {
+          'left': positions[selectedIndices[i]]['left'] + 40.0,
+          'bottom': positions[selectedIndices[i]]['bottom']
+        };
+        if (i % 8 == 0) {
+          positions[selectedIndices[i]] = {
+            'left': positions[selectedIndices[i]]['left'] - 320,
+            'bottom': positions[selectedIndices[i]]['bottom'] + 50
+          };
+        }
+      }
+      positions.remove(selectedIndices[index]);
       selectedIndices.removeAt(index);
       selectedWord = newWord;
     });
+    }
+    
   }
 
   onSelect(int index, double left, double bottom) {
@@ -163,7 +189,6 @@ GlobalKey nextPositionKey = GlobalKey();
         checkButtonEnable = true;
       });
     }
-    print(left);
     setState(() {
       selectedIndices.add(index);
       selectedWord = newWord;

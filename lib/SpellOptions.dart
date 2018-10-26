@@ -5,6 +5,7 @@ import 'SpellOptionItem.dart';
 class SpellOptions extends StatelessWidget {
   SpellOptions(
       {Key key,
+      this.scrollOffset,
       this.options,
       this.selectedIndices,
       this.positions,
@@ -15,6 +16,7 @@ class SpellOptions extends StatelessWidget {
       : super(key: key);
 
   final String options;
+  final double scrollOffset;
   final List<int> selectedIndices;
   final Function onSelect;
   final Function onUnSelect;
@@ -55,12 +57,11 @@ class SpellOptions extends StatelessWidget {
   Widget build(BuildContext context) {
     var chunkSize = 4;
     var chunks = getChunks(options, chunkSize);
-    Offset nextPosition = Offset(-9.0, 176.0);
-    if (nextPositionKey.currentContext != null && selectedIndices.length > 0) {
-      final RenderBox renderBoxRed = nextPositionKey.currentContext.findRenderObject();
-      nextPosition = renderBoxRed != null ? renderBoxRed.localToGlobal(Offset.zero) : null;
-    }
-    print(nextPosition);
+    var numberOfColumns = 8;
+    int nextRow = (selectedIndices.length / numberOfColumns).floor();
+    int nextColumn = selectedIndices.length % numberOfColumns;
+    Offset nextPosition = Offset(10.0 + (nextColumn*40), (150.0 - scrollOffset)  + (nextRow*50));
+
     return Container(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
