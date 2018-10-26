@@ -143,13 +143,13 @@ class _SpellOptionItemState extends State<SpellOptionItem> with TickerProviderSt
             width: 50.0,
             decoration: ShapeDecoration(
               shape: CircleBorder(side: BorderSide.none),
-              color: widget.isSelected ? Colors.grey : Colors.red,
+              color: widget.isSelected ? Colors.lightBlueAccent[100] : Colors.grey,
             ),
             child: Center(
                 child: Text(
               widget.char,
               style: TextStyle(
-                  color: Colors.white,
+                  color: widget.isSelected ? Colors.black : Colors.white,
                   fontWeight: FontWeight.bold,
                   fontSize: 15.0),
             )

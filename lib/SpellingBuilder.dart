@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';import 'SpeakWord.dart';
+import 'package:flutter/material.dart';
 import 'SpeakWord.dart';
 import 'CheckButton.dart';
 import 'utils.dart';
@@ -34,9 +34,9 @@ class _SpellingBuilderState extends State<SpellingBuilder> {
   CHECK_STATUS checkSuccess = CHECK_STATUS.INITIAL;
   bool checkButtonEnable = false;
   var positions = Map();
-GlobalKey nextPositionKey = GlobalKey();
-final ScrollController controller = ScrollController();
-double scrollOffset = 0.0;
+  GlobalKey nextPositionKey = GlobalKey();
+  final ScrollController controller = ScrollController();
+  double scrollOffset = 0.0;
 
   @mustCallSuper
   @protected
@@ -46,78 +46,128 @@ double scrollOffset = 0.0;
     selectedWord = '';
   }
 
- @override
+  @override
   void initState() {
     controller.addListener(() {
       setState(() {
-              scrollOffset = controller.position.pixels;
-            });
+        scrollOffset = controller.position.pixels;
+      });
     });
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-
-
     return Scaffold(
-        floatingActionButton: Stack(
-          children: <Widget>[
-            Positioned(
-              top: 90.0,
-              right: 8.0,
-              child: SpeakWord(word: widget.word),
+        appBar: AppBar(
+          leading: Icon(
+            Icons.list,
+            color: Colors.black,
+          ),
+          backgroundColor: Colors.greenAccent,
+          elevation: 0.0,
+          actions: <Widget>[
+            Container(
+                padding: EdgeInsets.only(right: 5.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Text(
+                      widget.listName,
+                      style: TextStyle(
+                        fontSize: 16.0,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.black87,
+                      ),
+                    ),
+                    Text(
+                      widget.index.toString() + ' of 10',
+                      style: TextStyle(
+                        fontSize: 12.0,
+                        color: Colors.black54,
+                      ),
+                    )
+                  ],
+                )),
+            Container(
+              child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    SpeakWord(word: widget.word),
+                  ]),
             ),
-            Positioned(
-              bottom: - 40.0,
-              right: 10.0,
-              child: CheckButton(
-                      enable: checkButtonEnable,
-                      onTap: onCheckButtonTap,
-                      checkSuccess: checkSuccess),
-            )
           ],
         ),
-        appBar: AppBar(
-          title: Column(
-            children: <Widget>[
-              Text(widget.listName),
-              Container(
-                  margin: EdgeInsets.only(top: 10.0),
-                  child: Text(
-                    (widget.index + 1).toString() +
-                        ' of ' +
-                        widget.total.toString(),
-                    style: TextStyle(
-                        fontWeight: FontWeight.normal, fontSize: 15.0),
-                  ))
-            ],
-          ),
+        backgroundColor: Colors.grey[200],
+        bottomNavigationBar: Theme(
+            data: Theme.of(context).copyWith(
+                // sets the background color of the `BottomNavigationBar`
+                canvasColor: Colors.greenAccent,
+                // sets the active color of the `BottomNavigationBar` if `Brightness` is light
+                primaryColor: Colors.black,
+                textTheme: Theme.of(context).textTheme.copyWith(
+                    caption: new TextStyle(
+                        color: Colors
+                            .black))), // sets the inactive color of the `BottomNavigationBar`
+            child: BottomNavigationBar(
+              items: [
+                new BottomNavigationBarItem(
+                  icon: new Icon(Icons.visibility),
+                  title: new Text("Reveal"),
+                ),
+                new BottomNavigationBarItem(
+                  icon: new Icon(Icons.skip_next),
+                  title: new Text("Skip"),
+                ),
+              ],
+            )),
+        floatingActionButton: FloatingActionButton.extended(
+          elevation: 4.0,
+          backgroundColor: Colors.orange,
+          icon: const Icon(Icons.check),
+          label: const Text('CHECK'),
+          onPressed: () {},
         ),
-        body: SingleChildScrollView(
-            controller: controller,
-            child: ConstrainedBox(
-                constraints: BoxConstraints(),
-                child: Column(
-                  children: <Widget>[
-                    SpellingField(word: selectedWord, onClick: onUnSelect, nextPositionKey: nextPositionKey),
-                    Divider(
-                      height: 100.0,
-                      color: Colors.blue,
-                    ),
-                    SpellOptions(
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+        body: new CustomScrollView(
+          controller: controller,
+          slivers: <Widget>[
+            new SliverPadding(
+              padding: new EdgeInsets.all(16.0),
+              sliver: new SliverList(
+                delegate: new SliverChildListDelegate([
+                  SpellingField(
+                      word: selectedWord,
+                      onClick: onUnSelect,
+                      nextPositionKey: nextPositionKey),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: <Widget>[
+                      Container(
+                        child: Container(
+                            child: GestureDetector(
+                          onTap: () {},
+                          child: Container(
+                            child: Icon(Icons.backspace),
+                          ),
+                        )),
+                      )
+                    ],
+                  ),
+                  SpellOptions(
                       scrollOffset: scrollOffset,
-                        options: widget.options,
-                        selectedIndices: selectedIndices,
-                        positions: positions,
-                        onUnSelect: onUnSelect,
-                        onUnSelectChar: onUnSelectChar,
-                        nextPositionKey: nextPositionKey,
-                        onSelect: onSelect),
-                     
-                  ],
-                ))
-                ));
+                      options: widget.options,
+                      selectedIndices: selectedIndices,
+                      positions: positions,
+                      onUnSelect: onUnSelect,
+                      onUnSelectChar: onUnSelectChar,
+                      nextPositionKey: nextPositionKey,
+                      onSelect: onSelect),
+                ]),
+              ),
+            ),
+          ],
+        ));
   }
 
   onCheckButtonTap() {
@@ -144,39 +194,38 @@ double scrollOffset = 0.0;
 
   onUnSelect(int index) {
     if (index != -1) {
-    String newWord =
-        selectedWord.substring(0, index) + selectedWord.substring(index + 1);
-    if (checkButtonEnable && newWord.length == 0) {
-      setState(() {
-        checkSuccess = CHECK_STATUS.INITIAL;
-        checkButtonEnable = false;
-      });
-    } else {
-      setState(() {
-        checkSuccess = CHECK_STATUS.INITIAL;
-        checkButtonEnable = true;
-      });
-    }
-    
-    setState(() {
-      for (var i = selectedIndices.length - 1; i > index ;i--){
-        positions[selectedIndices[i]] = {
-          'left': positions[selectedIndices[i]]['left'] + 40.0,
-          'bottom': positions[selectedIndices[i]]['bottom']
-        };
-        if (i % 8 == 0) {
-          positions[selectedIndices[i]] = {
-            'left': positions[selectedIndices[i]]['left'] - 320,
-            'bottom': positions[selectedIndices[i]]['bottom'] + 50
-          };
-        }
+      String newWord =
+          selectedWord.substring(0, index) + selectedWord.substring(index + 1);
+      if (checkButtonEnable && newWord.length == 0) {
+        setState(() {
+          checkSuccess = CHECK_STATUS.INITIAL;
+          checkButtonEnable = false;
+        });
+      } else {
+        setState(() {
+          checkSuccess = CHECK_STATUS.INITIAL;
+          checkButtonEnable = true;
+        });
       }
-      positions.remove(selectedIndices[index]);
-      selectedIndices.removeAt(index);
-      selectedWord = newWord;
-    });
+
+      setState(() {
+        for (var i = selectedIndices.length - 1; i > index; i--) {
+          positions[selectedIndices[i]] = {
+            'left': positions[selectedIndices[i]]['left'] + 40.0,
+            'bottom': positions[selectedIndices[i]]['bottom']
+          };
+          if (i % 8 == 0) {
+            positions[selectedIndices[i]] = {
+              'left': positions[selectedIndices[i]]['left'] - 320,
+              'bottom': positions[selectedIndices[i]]['bottom'] + 50
+            };
+          }
+        }
+        positions.remove(selectedIndices[index]);
+        selectedIndices.removeAt(index);
+        selectedWord = newWord;
+      });
     }
-    
   }
 
   onSelect(int index, double left, double bottom) {
@@ -190,10 +239,7 @@ double scrollOffset = 0.0;
     setState(() {
       selectedIndices.add(index);
       selectedWord = newWord;
-      positions[index] = {
-        'left': left,
-        'bottom': bottom
-      };
+      positions[index] = {'left': left, 'bottom': bottom};
     });
   }
 }

@@ -19,10 +19,10 @@ class _SpeakWordState extends State<SpeakWord> with RouteAware {
   Widget build(BuildContext context) {
     return RawMaterialButton(
       onPressed: speak,
-      child: Icon(Icons.volume_up, color: _isSpeaking ? Colors.yellow : Colors.red),
+      child: Icon(Icons.volume_up, color: _isSpeaking ? Colors.yellow : Colors.white),
       shape: new CircleBorder(),
       elevation: 2.0,
-      fillColor: _isSpeaking ? Colors.red : Colors.yellow,
+      fillColor: _isSpeaking ? Colors.red : Colors.orange,
       padding: const EdgeInsets.all(15.0),
     );
   }
