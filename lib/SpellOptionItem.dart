@@ -52,7 +52,6 @@ class _SpellOptionItemState extends State<SpellOptionItem> with TickerProviderSt
     
     super.initState();
     widget.selectStreamController.stream.listen((data) {
-       print(data);
       if (int.parse(data) == widget.index) {
         selectChar(widget.index, nextLeft, nextBottom);
       }
@@ -60,9 +59,7 @@ class _SpellOptionItemState extends State<SpellOptionItem> with TickerProviderSt
     }, onError: (error) {
     });
      widget.eventStreamController.stream.listen((data) {
-       print(data.type);
       if (data.type == "RESET") {
-        print('RESET');
         moveAnimationController.reset();
       }
     }, onDone: () {

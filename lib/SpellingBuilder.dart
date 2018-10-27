@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'SpeakWord.dart';
-import 'SpellHelperHome.dart';
 import 'utils.dart';
 import 'dart:async';
 import 'SpellOptions.dart';
@@ -18,7 +17,7 @@ class SpellingBuilder extends StatefulWidget {
       this.options})
       : super(key: key);
 
-final StreamController<Event> eventStreamController;
+  final StreamController<Event> eventStreamController;
   final String listName;
   final Function onComplete;
   final String word;
@@ -41,8 +40,8 @@ class _SpellingBuilderState extends State<SpellingBuilder> {
   double scrollOffset = 0.0;
   int unSelectIndex = -1;
   StreamController<String> streamController = new StreamController.broadcast();
-  StreamController<String> selectStreamController = new StreamController.broadcast();
-
+  StreamController<String> selectStreamController =
+      new StreamController.broadcast();
 
   @mustCallSuper
   @protected
@@ -54,7 +53,6 @@ class _SpellingBuilderState extends State<SpellingBuilder> {
 
   @override
   void initState() {
-    
     controller.addListener(() {
       setState(() {
         scrollOffset = controller.position.pixels;
@@ -64,27 +62,50 @@ class _SpellingBuilderState extends State<SpellingBuilder> {
   }
 
   checkWord() {
-
     print(widget.word);
-    
+
     if (widget.word == selectedWord) {
       setState(() {
-          checkSuccess = CHECK_STATUS.SUCCESS;   
+        checkSuccess = CHECK_STATUS.SUCCESS;
       });
       new Future.delayed(const Duration(seconds: 1), () {
         widget.onComplete();
         setState(() {
-          checkSuccess = CHECK_STATUS.INITIAL;   
+          checkSuccess = CHECK_STATUS.INITIAL;
         });
       });
-      
-      
     } else {
       setState(() {
-          checkSuccess = CHECK_STATUS.FAIL;
+        checkSuccess = CHECK_STATUS.FAIL;
       });
-      
     }
+  }
+
+  onReveal() {
+    print('Reveal');
+    setState(() {
+        selectedWord = "";
+        selectedIndices = [];
+        positions = new Map();
+      });
+    for(int i=0; i< selectedIndices.length;i++) {
+      onUnSelect(i);
+    }
+
+var selected = "";
+    for (int i = 0; i < widget.word.length; i++) {
+      for (int j = 0; j < widget.options.length; j++) {
+        if (widget.word[i] == widget.options[j] &&
+            !selected.contains(j.toString() + ",")) {
+          selected += j.toString() + ",";
+          new Future.delayed(Duration(milliseconds: i * 100), () {
+            selectStreamController.add(j.toString());
+          });
+          break;
+        }
+      }
+    }
+    
   }
 
   @override
@@ -96,10 +117,10 @@ class _SpellingBuilderState extends State<SpellingBuilder> {
               Navigator.of(context).pop();
             },
             child: Icon(
-            Icons.list,
-            color: Colors.black,
+              Icons.list,
+              color: Colors.black,
+            ),
           ),
-          ) ,
           backgroundColor: Colors.greenAccent,
           elevation: 0.0,
           actions: <Widget>[
@@ -146,46 +167,41 @@ class _SpellingBuilderState extends State<SpellingBuilder> {
                         color: Colors
                             .black))), // sets the inactive color of the `BottomNavigationBar`
             child: BottomNavigationBar(
+              onTap: (x) {
+                print(x);
+                if (x == 0) {
+                  onReveal();
+                } else if (x == 1) {
+                  widget.onComplete();
+                  setState(() {
+                    checkButtonEnable = true;
+                    checkSuccess = CHECK_STATUS.INITIAL;
+                  });
+                }
+              },
               items: [
                 new BottomNavigationBarItem(
-                  icon: GestureDetector(
-                    onTap: () {
-                      var selected = "";
-                      for(int i=0; i < widget.word.length; i++) {
-                        for(int j=0; j < widget.options.length; j++) {
-                            if (widget.word[i] == widget.options[j] && !selected.contains(j.toString() + ",")) {
-                              selected += j.toString() + ",";
-                              new Future.delayed(Duration(milliseconds: i * 100), () {
-                               selectStreamController.add(j.toString());
-                              });
-                              break;  
-                            }
-                        }
-                      }
-                    },
-                    child:  Icon(Icons.visibility),
-                  ),
+                  icon: Icon(Icons.visibility),
                   title: new Text("Reveal"),
                 ),
                 new BottomNavigationBarItem(
-                  icon: GestureDetector(
-                    onTap: () {
-                      widget.onComplete();
-                      setState(() {
-                        checkButtonEnable = true;
-                        checkSuccess = CHECK_STATUS.INITIAL;
-                      });
-                    },
-                    child: Icon(Icons.skip_next)
-                  ) ,
+                  icon: Icon(Icons.skip_next),
                   title: new Text("Skip"),
                 ),
               ],
             )),
         floatingActionButton: FloatingActionButton.extended(
           elevation: 4.0,
-          backgroundColor: checkSuccess == CHECK_STATUS.INITIAL ? selectedWord.length > 0 ? Colors.orange : Colors.grey : checkSuccess == CHECK_STATUS.SUCCESS ? Colors.green : Colors.red ,
-          icon: checkSuccess == CHECK_STATUS.INITIAL ? Icon(Icons.help) : checkSuccess == CHECK_STATUS.SUCCESS ? Icon(Icons.check) : Icon(Icons.cancel),
+          backgroundColor: checkSuccess == CHECK_STATUS.INITIAL
+              ? selectedWord.length > 0 ? Colors.orange : Colors.grey
+              : checkSuccess == CHECK_STATUS.SUCCESS
+                  ? Colors.green
+                  : Colors.red,
+          icon: checkSuccess == CHECK_STATUS.INITIAL
+              ? Icon(Icons.help)
+              : checkSuccess == CHECK_STATUS.SUCCESS
+                  ? Icon(Icons.check)
+                  : Icon(Icons.cancel),
           label: const Text('CHECK'),
           onPressed: checkWord,
         ),
@@ -218,9 +234,9 @@ class _SpellingBuilderState extends State<SpellingBuilder> {
                     ],
                   ),
                   SpellOptions(
-                    eventStreamController: widget.eventStreamController,
-                    streamController: streamController,
-                    selectStreamController: selectStreamController,
+                      eventStreamController: widget.eventStreamController,
+                      streamController: streamController,
+                      selectStreamController: selectStreamController,
                       scrollOffset: scrollOffset,
                       options: widget.options,
                       selectedIndices: selectedIndices,
