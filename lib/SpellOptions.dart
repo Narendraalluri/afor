@@ -8,6 +8,7 @@ class SpellOptions extends StatelessWidget {
   SpellOptions(
       {Key key,
       this.scrollOffset,
+      this.selectStreamController,
       this.eventStreamController,
       this.streamController,
       this.options,
@@ -20,6 +21,7 @@ class SpellOptions extends StatelessWidget {
       this.onUnSelect})
       : super(key: key);
 
+  final StreamController<String> selectStreamController;
   final StreamController<String> streamController;
   final StreamController<Event> eventStreamController;
   final int unSelectIndex;
@@ -43,6 +45,7 @@ class SpellOptions extends StatelessWidget {
   getItem(int index,  Offset nextPosition) {
     return SpellOptionItem(
                 index: index,
+                selectStreamController: selectStreamController,
                 eventStreamController: eventStreamController,
                 streamController: streamController,
                 unSelectIndex: unSelectIndex,

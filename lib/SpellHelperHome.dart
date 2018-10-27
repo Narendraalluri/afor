@@ -84,11 +84,11 @@ class _SpellingListState extends State<SpellingList> {
         });
       
     } else {
-      
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => SpellHelperHome()),
-      );
+      Navigator.of(context).pop();
+      // Navigator.push(
+      //   context,
+      //   MaterialPageRoute(builder: (context) => SpellHelperHome()),
+      // );
     }
   }
 }

@@ -40,7 +40,8 @@ class _SpellingBuilderState extends State<SpellingBuilder> {
   final ScrollController controller = ScrollController();
   double scrollOffset = 0.0;
   int unSelectIndex = -1;
-    StreamController<String> streamController = new StreamController.broadcast();
+  StreamController<String> streamController = new StreamController.broadcast();
+  StreamController<String> selectStreamController = new StreamController.broadcast();
 
 
   @mustCallSuper
@@ -74,7 +75,7 @@ class _SpellingBuilderState extends State<SpellingBuilder> {
         widget.onComplete();
         setState(() {
           checkSuccess = CHECK_STATUS.INITIAL;   
-      });
+        });
       });
       
       
@@ -92,11 +93,7 @@ class _SpellingBuilderState extends State<SpellingBuilder> {
         appBar: AppBar(
           leading: GestureDetector(
             onTap: () {
-              //Navigator.of(context).pop();
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => SpellHelperHome()),
-              );
+              Navigator.of(context).pop();
             },
             child: Icon(
             Icons.list,
@@ -151,11 +148,36 @@ class _SpellingBuilderState extends State<SpellingBuilder> {
             child: BottomNavigationBar(
               items: [
                 new BottomNavigationBarItem(
-                  icon: new Icon(Icons.visibility),
+                  icon: GestureDetector(
+                    onTap: () {
+                      var selected = "";
+                      for(int i=0; i < widget.word.length; i++) {
+                        for(int j=0; j < widget.options.length; j++) {
+                            if (widget.word[i] == widget.options[j] && !selected.contains(j.toString() + ",")) {
+                              selected += j.toString() + ",";
+                              new Future.delayed(Duration(milliseconds: i * 100), () {
+                               selectStreamController.add(j.toString());
+                              });
+                              break;  
+                            }
+                        }
+                      }
+                    },
+                    child:  Icon(Icons.visibility),
+                  ),
                   title: new Text("Reveal"),
                 ),
                 new BottomNavigationBarItem(
-                  icon: new Icon(Icons.skip_next),
+                  icon: GestureDetector(
+                    onTap: () {
+                      widget.onComplete();
+                      setState(() {
+                        checkButtonEnable = true;
+                        checkSuccess = CHECK_STATUS.INITIAL;
+                      });
+                    },
+                    child: Icon(Icons.skip_next)
+                  ) ,
                   title: new Text("Skip"),
                 ),
               ],
@@ -198,6 +220,7 @@ class _SpellingBuilderState extends State<SpellingBuilder> {
                   SpellOptions(
                     eventStreamController: widget.eventStreamController,
                     streamController: streamController,
+                    selectStreamController: selectStreamController,
                       scrollOffset: scrollOffset,
                       options: widget.options,
                       selectedIndices: selectedIndices,

@@ -7,6 +7,7 @@ class SpellOptionItem extends StatefulWidget {
   SpellOptionItem(
       {Key key,
       this.index,
+      this.selectStreamController,
       this.eventStreamController,
       this.streamController,
       this.char,
@@ -19,7 +20,7 @@ class SpellOptionItem extends StatefulWidget {
       this.nextPosition,
       this.onUnSelect})
       : super(key: key);
-
+final StreamController<String> selectStreamController;
 final StreamController<Event> eventStreamController;
   final StreamController<String> streamController;
   final String char;
@@ -50,6 +51,14 @@ class _SpellOptionItemState extends State<SpellOptionItem> with TickerProviderSt
   initState() {
     
     super.initState();
+    widget.selectStreamController.stream.listen((data) {
+       print(data);
+      if (int.parse(data) == widget.index) {
+        selectChar(widget.index, nextLeft, nextBottom);
+      }
+    }, onDone: () {
+    }, onError: (error) {
+    });
      widget.eventStreamController.stream.listen((data) {
        print(data.type);
       if (data.type == "RESET") {
