@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'SpeakWord.dart';
-import 'CheckButton.dart';
+import 'SpellHelperHome.dart';
 import 'utils.dart';
 import 'dart:async';
 import 'SpellOptions.dart';
@@ -9,6 +9,7 @@ import 'SpellingField.dart';
 class SpellingBuilder extends StatefulWidget {
   SpellingBuilder(
       {Key key,
+      this.eventStreamController,
       this.listName,
       this.word,
       this.onComplete,
@@ -17,6 +18,7 @@ class SpellingBuilder extends StatefulWidget {
       this.options})
       : super(key: key);
 
+final StreamController<Event> eventStreamController;
   final String listName;
   final Function onComplete;
   final String word;
@@ -38,7 +40,8 @@ class _SpellingBuilderState extends State<SpellingBuilder> {
   final ScrollController controller = ScrollController();
   double scrollOffset = 0.0;
   int unSelectIndex = -1;
-  StreamController<String> streamController = new StreamController.broadcast();
+    StreamController<String> streamController = new StreamController.broadcast();
+
 
   @mustCallSuper
   @protected
@@ -50,6 +53,7 @@ class _SpellingBuilderState extends State<SpellingBuilder> {
 
   @override
   void initState() {
+    
     controller.addListener(() {
       setState(() {
         scrollOffset = controller.position.pixels;
@@ -58,14 +62,47 @@ class _SpellingBuilderState extends State<SpellingBuilder> {
     super.initState();
   }
 
+  checkWord() {
+
+    print(widget.word);
+    
+    if (widget.word == selectedWord) {
+      setState(() {
+          checkSuccess = CHECK_STATUS.SUCCESS;   
+      });
+      new Future.delayed(const Duration(seconds: 1), () {
+        widget.onComplete();
+        setState(() {
+          checkSuccess = CHECK_STATUS.INITIAL;   
+      });
+      });
+      
+      
+    } else {
+      setState(() {
+          checkSuccess = CHECK_STATUS.FAIL;
+      });
+      
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          leading: Icon(
+          leading: GestureDetector(
+            onTap: () {
+              //Navigator.of(context).pop();
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => SpellHelperHome()),
+              );
+            },
+            child: Icon(
             Icons.list,
             color: Colors.black,
           ),
+          ) ,
           backgroundColor: Colors.greenAccent,
           elevation: 0.0,
           actions: <Widget>[
@@ -125,10 +162,10 @@ class _SpellingBuilderState extends State<SpellingBuilder> {
             )),
         floatingActionButton: FloatingActionButton.extended(
           elevation: 4.0,
-          backgroundColor: Colors.orange,
-          icon: const Icon(Icons.check),
+          backgroundColor: checkSuccess == CHECK_STATUS.INITIAL ? selectedWord.length > 0 ? Colors.orange : Colors.grey : checkSuccess == CHECK_STATUS.SUCCESS ? Colors.green : Colors.red ,
+          icon: checkSuccess == CHECK_STATUS.INITIAL ? Icon(Icons.help) : checkSuccess == CHECK_STATUS.SUCCESS ? Icon(Icons.check) : Icon(Icons.cancel),
           label: const Text('CHECK'),
-          onPressed: () {},
+          onPressed: checkWord,
         ),
         floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
         body: new CustomScrollView(
@@ -159,6 +196,7 @@ class _SpellingBuilderState extends State<SpellingBuilder> {
                     ],
                   ),
                   SpellOptions(
+                    eventStreamController: widget.eventStreamController,
                     streamController: streamController,
                       scrollOffset: scrollOffset,
                       options: widget.options,

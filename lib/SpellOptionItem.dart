@@ -1,11 +1,13 @@
 
 import 'package:flutter/material.dart';
 import 'dart:async';
+import 'utils.dart';
 
 class SpellOptionItem extends StatefulWidget {
   SpellOptionItem(
       {Key key,
       this.index,
+      this.eventStreamController,
       this.streamController,
       this.char,
       this.unSelectIndex,
@@ -18,6 +20,7 @@ class SpellOptionItem extends StatefulWidget {
       this.onUnSelect})
       : super(key: key);
 
+final StreamController<Event> eventStreamController;
   final StreamController<String> streamController;
   final String char;
   final List<int> selectedIndices;
@@ -45,44 +48,36 @@ class _SpellOptionItemState extends State<SpellOptionItem> with TickerProviderSt
   double left = 0.0, bottom = 0.0, nextLeft = 0.0, nextBottom = 0.0;
   @override
   initState() {
+    
     super.initState();
+     widget.eventStreamController.stream.listen((data) {
+       print(data.type);
+      if (data.type == "RESET") {
+        print('RESET');
+        moveAnimationController.reset();
+      }
+    }, onDone: () {
+    }, onError: (error) {
+    });
     widget.streamController.stream.listen((data) {
-      if (widget.index == widget.selectedIndices[int.parse(data)]) {
+      if (widget.selectedIndices != null &&  widget.index == widget.selectedIndices[int.parse(data)]) {
         moveAnimationController.reverse(from: 1.0);
         widget.onUnSelect(widget.selectedIndices.indexOf(widget.index));
       }
     }, onDone: () {
     }, onError: (error) {
     });
-    bounceAnimationController = new AnimationController(
-        vsync: this, duration: Duration(milliseconds: 100));
+    
     moveAnimationController = new AnimationController(
         vsync: this, duration: Duration(milliseconds: 300));
-    moveDownAnimationController = new AnimationController(
-        vsync: this, duration: Duration(milliseconds: 100));
-    bounceAnimation = new Tween(begin: 0.0, end: 10.0).animate(
-        new CurvedAnimation(
-            parent: bounceAnimationController, curve: Curves.easeOut));
+    
     moveUpAnimation = new Tween(begin: 0.0, end: 1.0).animate(new CurvedAnimation(
                 parent: moveAnimationController, curve: Curves.easeOut));
-    moveDownAnimation = new Tween(begin: 100.0, end: 10.0).animate(
-        new CurvedAnimation(
-            parent: moveAnimationController, curve: Curves.easeOut));
-    opacityAnimation = new Tween(begin: 0.0, end: 0.5).animate(
-        new CurvedAnimation(
-            parent: bounceAnimationController, curve: Curves.easeOut));
-    bounceAnimation.addListener(() {
-      setState(() {});
-    });
+    
     moveUpAnimation.addListener(() {
       setState(() {});
     });
-    moveDownAnimation.addListener(() {
-      setState(() {});
-    });
-    opacityAnimation.addListener(() {
-      setState(() {});
-    });
+    
     moveAnimationController.addStatusListener((status) {
       if(status == AnimationStatus.completed) {
         widget.onSelect(widget.index, nextLeft, nextBottom);
@@ -94,9 +89,7 @@ class _SpellOptionItemState extends State<SpellOptionItem> with TickerProviderSt
   @override
   dispose() {
     super.dispose();
-    bounceAnimationController.dispose();
     moveAnimationController.dispose();
-    moveDownAnimationController.dispose();
   }
 
   @override
@@ -122,6 +115,7 @@ class _SpellOptionItemState extends State<SpellOptionItem> with TickerProviderSt
   
 
   Widget getStack() {
+
     return Stack(
       overflow: Overflow.visible,
       children: <Widget>[
@@ -130,7 +124,7 @@ class _SpellOptionItemState extends State<SpellOptionItem> with TickerProviderSt
             right: widget.isSelected ? left : moveUpAnimation.value * nextLeft,
             child: Opacity(
               opacity: 1.0,
-              child: InkWell(
+              child: GestureDetector(
                 onTap: () => unSelectChar(widget.index),
                 child: Container(
                 height: 50.0,

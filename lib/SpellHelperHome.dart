@@ -3,8 +3,10 @@ import 'SpellingBuilder.dart';
 import 'CreateList.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'dart:math';
+import 'dart:async';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'EditList.dart';
+import 'utils.dart';
 
 class SpellHelperHome extends StatelessWidget {
   SpellHelperHome({Key key, this.lists, this.userId}) : super(key: key);
@@ -36,6 +38,8 @@ class SpellingList extends StatefulWidget {
 
   final List<String> list;
   final String name;
+    StreamController<Event> eventStreamController = new StreamController.broadcast();
+
 
   @override
   _SpellingListState createState() => _SpellingListState();
@@ -47,6 +51,7 @@ class _SpellingListState extends State<SpellingList> {
   @override
   Widget build(BuildContext context) {
     return SpellingBuilder(
+      eventStreamController: widget.eventStreamController,
         listName: widget.name,
         index: currentIndex,
         total: widget.list.length,
@@ -73,10 +78,13 @@ class _SpellingListState extends State<SpellingList> {
 
   nextPage() {
     if (currentIndex + 1 < widget.list.length) {
-      setState(() {
-        currentIndex = currentIndex + 1;
-      });
+      widget.eventStreamController.add(Event('RESET'));
+        setState(() {
+          currentIndex = currentIndex + 1;
+        });
+      
     } else {
+      
       Navigator.push(
         context,
         MaterialPageRoute(builder: (context) => SpellHelperHome()),
