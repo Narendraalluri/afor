@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
+import 'BodyProgress.dart';
 import 'SpellHelperHome.dart';
 
 final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -26,12 +27,14 @@ class _LoginScreen3State extends State<LoginScreen3>
   String resetPasswordEmail;
   String loginEmail;
   String loginPassword;
+  bool isLoading = false;
 
 
   @override
   initState() {
     super.initState();
     setState(() {
+      isLoading = false;
       formError = '';
     });
   }
@@ -142,6 +145,7 @@ class _LoginScreen3State extends State<LoginScreen3>
             await userQuery
               .setData(userData);
             userLists = lists;
+            
             Navigator.push(
               context,
               MaterialPageRoute(builder: (context) => SpellHelperHome(lists: userLists, userId: uid,)),
@@ -153,10 +157,16 @@ class _LoginScreen3State extends State<LoginScreen3>
               MaterialPageRoute(builder: (context) => SpellHelperHome(lists: userLists, userId: uid,)),
             );
           }
+          setState(() {
+              isLoading = false;
+            });
       });
   }
 
   void _testSignInWithGoogle() async {
+    setState(() {
+      isLoading = true;
+    });
     FirebaseUser currentUser = await _auth.currentUser();
     if (currentUser == null) {
       final GoogleSignInAccount googleUser = await _googleSignIn.signIn();
@@ -174,7 +184,7 @@ class _LoginScreen3State extends State<LoginScreen3>
     return new Container(
       height: MediaQuery.of(context).size.height,
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Colors.grey[200],
         image: DecorationImage(
           colorFilter: new ColorFilter.mode(
               Colors.black.withOpacity(0.05), BlendMode.dstATop),
@@ -185,11 +195,11 @@ class _LoginScreen3State extends State<LoginScreen3>
       child: new Column(
         children: <Widget>[
           Container(
-            padding: EdgeInsets.all(120.0),
+            padding: EdgeInsets.only(top: 80.0),
             child: Center(
               child: Icon(
-                Icons.headset_mic,
-                color: Colors.redAccent,
+                Icons.school,
+                color: Colors.lightGreen,
                 size: 50.0,
               ),
             ),
@@ -203,7 +213,7 @@ class _LoginScreen3State extends State<LoginScreen3>
                     formError,
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
-                      color: Colors.redAccent,
+                      color: Colors.lightGreen,
                       fontSize: 15.0,
                     ),
                   ),
@@ -220,7 +230,7 @@ class _LoginScreen3State extends State<LoginScreen3>
                     "EMAIL",
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
-                      color: Colors.redAccent,
+                      color: Colors.lightGreen,
                       fontSize: 15.0,
                     ),
                   ),
@@ -235,7 +245,7 @@ class _LoginScreen3State extends State<LoginScreen3>
             decoration: BoxDecoration(
               border: Border(
                 bottom: BorderSide(
-                    color: Colors.redAccent,
+                    color: Colors.lightGreen,
                     width: 0.5,
                     style: BorderStyle.solid),
               ),
@@ -273,7 +283,7 @@ class _LoginScreen3State extends State<LoginScreen3>
                     "PASSWORD",
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
-                      color: Colors.redAccent,
+                      color: Colors.lightGreen,
                       fontSize: 15.0,
                     ),
                   ),
@@ -288,7 +298,7 @@ class _LoginScreen3State extends State<LoginScreen3>
             decoration: BoxDecoration(
               border: Border(
                 bottom: BorderSide(
-                    color: Colors.redAccent,
+                    color: Colors.lightGreen,
                     width: 0.5,
                     style: BorderStyle.solid),
               ),
@@ -328,7 +338,7 @@ class _LoginScreen3State extends State<LoginScreen3>
                     "Forgot Password?",
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
-                      color: Colors.redAccent,
+                      color: Colors.lightGreen,
                       fontSize: 15.0,
                     ),
                     textAlign: TextAlign.end,
@@ -348,7 +358,7 @@ class _LoginScreen3State extends State<LoginScreen3>
                         "New User?",
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
-                          color: Colors.redAccent,
+                          color: Colors.lightGreen,
                           fontSize: 15.0,
                         ),
                         textAlign: TextAlign.end,
@@ -373,7 +383,7 @@ class _LoginScreen3State extends State<LoginScreen3>
                     shape: new RoundedRectangleBorder(
                       borderRadius: new BorderRadius.circular(30.0),
                     ),
-                    color: Colors.redAccent,
+                    color: Colors.lightGreen,
                     onPressed: () {
                       login();
                     },
@@ -390,7 +400,7 @@ class _LoginScreen3State extends State<LoginScreen3>
                               "LOGIN",
                               textAlign: TextAlign.center,
                               style: TextStyle(
-                                  color: Colors.white,
+                                  color: Colors.black,
                                   fontWeight: FontWeight.bold),
                             ),
                           ),
@@ -410,7 +420,7 @@ class _LoginScreen3State extends State<LoginScreen3>
               children: <Widget>[
                 new Expanded(
                   child: new Container(
-                    margin: EdgeInsets.all(8.0),
+                    margin: EdgeInsets.all(35.0),
                     decoration: BoxDecoration(border: Border.all(width: 0.25)),
                   ),
                 ),
@@ -446,7 +456,8 @@ class _LoginScreen3State extends State<LoginScreen3>
                             shape: new RoundedRectangleBorder(
                               borderRadius: new BorderRadius.circular(30.0),
                             ),
-                            color: Color(0Xffdb3236),
+                            color: Colors.lightGreen,
+                            textColor: Colors.black,
                             onPressed: () {},
                             child: new Container(
                               child: new Row(
@@ -463,19 +474,24 @@ class _LoginScreen3State extends State<LoginScreen3>
                                       ),
                                       child: new Row(
                                         mainAxisAlignment:
-                                            MainAxisAlignment.spaceEvenly,
+                                            MainAxisAlignment.center,
                                         children: <Widget>[
-                                          Icon(
-                                            const IconData(0xea88,
+                                          Container(
+                                            margin: EdgeInsets.only(right: 20.0),
+                                            child: Icon(
+                                              IconData(0xea88,
                                                 fontFamily: 'icomoon'),
-                                            color: Colors.white,
-                                            size: 15.0,
+                                              color: Colors.black,
+                                              size: 15.0,
+                                            ),
                                           ),
+                                          
                                           Text(
                                             "GOOGLE",
                                             textAlign: TextAlign.center,
                                             style: TextStyle(
-                                                color: Colors.white,
+                                              fontSize: 16.0,
+                                                color: Colors.black,
                                                 fontWeight: FontWeight.bold),
                                           ),
                                         ],
@@ -503,7 +519,7 @@ Widget resetPasswordPage() {
     return new Container(
       height: MediaQuery.of(context).size.height,
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Colors.grey[200],
         image: DecorationImage(
           colorFilter: new ColorFilter.mode(
               Colors.black.withOpacity(0.05), BlendMode.dstATop),
@@ -518,7 +534,7 @@ Widget resetPasswordPage() {
             child: Center(
               child: Icon(
                 Icons.headset_mic,
-                color: Colors.redAccent,
+                color: Colors.lightGreen,
                 size: 50.0,
               ),
             ),
@@ -532,7 +548,7 @@ Widget resetPasswordPage() {
                     formError,
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
-                      color: Colors.redAccent,
+                      color: Colors.lightGreen,
                       fontSize: 15.0,
                     ),
                   ),
@@ -549,7 +565,7 @@ Widget resetPasswordPage() {
                     "EMAIL",
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
-                      color: Colors.redAccent,
+                      color: Colors.lightGreen,
                       fontSize: 15.0,
                     ),
                   ),
@@ -564,7 +580,7 @@ Widget resetPasswordPage() {
             decoration: BoxDecoration(
               border: Border(
                 bottom: BorderSide(
-                    color: Colors.redAccent,
+                    color: Colors.lightGreen,
                     width: 0.5,
                     style: BorderStyle.solid),
               ),
@@ -601,7 +617,7 @@ Widget resetPasswordPage() {
                     shape: new RoundedRectangleBorder(
                       borderRadius: new BorderRadius.circular(30.0),
                     ),
-                    color: Colors.redAccent,
+                    color: Colors.lightGreen,
                     onPressed: () {
                       resetPassword();
                     },
@@ -618,7 +634,7 @@ Widget resetPasswordPage() {
                               "RESET PASSWORD",
                               textAlign: TextAlign.center,
                               style: TextStyle(
-                                  color: Colors.white,
+                                  color: Colors.black,
                                   fontWeight: FontWeight.bold),
                             ),
                           ),
@@ -642,11 +658,12 @@ Widget resetPasswordPage() {
                   Padding(
                     padding: const EdgeInsets.only(right: 20.0),
                     child: new FlatButton(
+                    
                       child: new Text(
                         "Login",
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
-                          color: Colors.redAccent,
+                          color: Colors.green,
                           fontSize: 15.0,
                         ),
                         textAlign: TextAlign.end,
@@ -669,7 +686,7 @@ Widget resetPasswordPage() {
     return new Container(
       height: MediaQuery.of(context).size.height,
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Colors.grey[200],
         image: DecorationImage(
           colorFilter: new ColorFilter.mode(
               Colors.black.withOpacity(0.05), BlendMode.dstATop),
@@ -684,7 +701,7 @@ Widget resetPasswordPage() {
             child: Center(
               child: Icon(
                 Icons.headset_mic,
-                color: Colors.redAccent,
+                color: Colors.lightGreen,
                 size: 50.0,
               ),
             ),
@@ -698,7 +715,7 @@ Widget resetPasswordPage() {
                     formError,
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
-                      color: Colors.redAccent,
+                      color: Colors.lightGreen,
                       fontSize: 15.0,
                     ),
                   ),
@@ -715,7 +732,7 @@ Widget resetPasswordPage() {
                     "EMAIL",
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
-                      color: Colors.redAccent,
+                      color: Colors.lightGreen,
                       fontSize: 15.0,
                     ),
                   ),
@@ -730,7 +747,7 @@ Widget resetPasswordPage() {
             decoration: BoxDecoration(
               border: Border(
                 bottom: BorderSide(
-                    color: Colors.redAccent,
+                    color: Colors.lightGreen,
                     width: 0.5,
                     style: BorderStyle.solid),
               ),
@@ -768,7 +785,7 @@ Widget resetPasswordPage() {
                     "PASSWORD",
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
-                      color: Colors.redAccent,
+                      color: Colors.lightGreen,
                       fontSize: 15.0,
                     ),
                   ),
@@ -783,7 +800,7 @@ Widget resetPasswordPage() {
             decoration: BoxDecoration(
               border: Border(
                 bottom: BorderSide(
-                    color: Colors.redAccent,
+                    color: Colors.lightGreen,
                     width: 0.5,
                     style: BorderStyle.solid),
               ),
@@ -822,7 +839,7 @@ Widget resetPasswordPage() {
                     "CONFIRM PASSWORD",
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
-                      color: Colors.redAccent,
+                      color: Colors.lightGreen,
                       fontSize: 15.0,
                     ),
                   ),
@@ -837,7 +854,7 @@ Widget resetPasswordPage() {
             decoration: BoxDecoration(
               border: Border(
                 bottom: BorderSide(
-                    color: Colors.redAccent,
+                    color: Colors.lightGreen,
                     width: 0.5,
                     style: BorderStyle.solid),
               ),
@@ -877,7 +894,7 @@ Widget resetPasswordPage() {
                     "Already have an account?",
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
-                      color: Colors.redAccent,
+                      color: Colors.lightGreen,
                       fontSize: 15.0,
                     ),
                     textAlign: TextAlign.end,
@@ -900,7 +917,7 @@ Widget resetPasswordPage() {
                     shape: new RoundedRectangleBorder(
                       borderRadius: new BorderRadius.circular(30.0),
                     ),
-                    color: Colors.redAccent,
+                    color: Colors.lightGreen,
                     onPressed: () {
                       registerNewUser();
                     },
@@ -917,7 +934,7 @@ Widget resetPasswordPage() {
                               "SIGN UP",
                               textAlign: TextAlign.center,
                               style: TextStyle(
-                                  color: Colors.white,
+                                  color: Colors.black,
                                   fontWeight: FontWeight.bold),
                             ),
                           ),
@@ -960,16 +977,21 @@ Widget resetPasswordPage() {
     );
   }
 
+  loginView() {
+    return Container(
+            height: MediaQuery.of(context).size.height,
+            child: PageView(
+              controller: _controller,
+              physics: new AlwaysScrollableScrollPhysics(),
+              children: <Widget>[signupPage(), loginPage(), resetPasswordPage()],
+              scrollDirection: Axis.horizontal,
+            )
+          );
+      }
+
+
   @override
   Widget build(BuildContext context) {
-    return Container(
-        height: MediaQuery.of(context).size.height,
-        child: PageView(
-          controller: _controller,
-          physics: new AlwaysScrollableScrollPhysics(),
-          children: <Widget>[signupPage(), loginPage(), resetPasswordPage()],
-          scrollDirection: Axis.horizontal,
-        )
-      );
+    return isLoading ? BodyProgress() : loginView();
   }
 }

@@ -1,3 +1,4 @@
+
 enum CHECK_STATUS { INITIAL, SUCCESS, FAIL }
 
 class Event {

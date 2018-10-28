@@ -82,17 +82,16 @@ class _SpellingBuilderState extends State<SpellingBuilder> {
   }
 
   onReveal() {
-    print('Reveal');
     setState(() {
-        selectedWord = "";
-        selectedIndices = [];
-        positions = new Map();
-      });
-    for(int i=0; i< selectedIndices.length;i++) {
+      selectedWord = "";
+      selectedIndices = [];
+      positions = new Map();
+    });
+    for (int i = 0; i < selectedIndices.length; i++) {
       onUnSelect(i);
     }
 
-var selected = "";
+    var selected = "";
     for (int i = 0; i < widget.word.length; i++) {
       for (int j = 0; j < widget.options.length; j++) {
         if (widget.word[i] == widget.options[j] &&
@@ -105,7 +104,6 @@ var selected = "";
         }
       }
     }
-    
   }
 
   @override
@@ -121,7 +119,7 @@ var selected = "";
               color: Colors.black,
             ),
           ),
-          backgroundColor: Colors.greenAccent,
+          backgroundColor: Colors.lightGreen,
           elevation: 0.0,
           actions: <Widget>[
             Container(
@@ -159,7 +157,7 @@ var selected = "";
         bottomNavigationBar: Theme(
             data: Theme.of(context).copyWith(
                 // sets the background color of the `BottomNavigationBar`
-                canvasColor: Colors.greenAccent,
+                canvasColor: Colors.lightGreen,
                 // sets the active color of the `BottomNavigationBar` if `Brightness` is light
                 primaryColor: Colors.black,
                 textTheme: Theme.of(context).textTheme.copyWith(
