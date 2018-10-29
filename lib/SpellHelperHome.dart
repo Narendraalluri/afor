@@ -22,7 +22,10 @@ class SpellHelperHome extends StatelessWidget {
           onPressed: () {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => CreateList()),
+              MaterialPageRoute(builder: (context) => CreateList(
+                userId: userId,
+                lists: lists,
+              )),
             );
           },
           child: Icon(Icons.add),

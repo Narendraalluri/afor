@@ -3,6 +3,12 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'SpellHelperHome.dart';
 
 class CreateList extends StatefulWidget {
+
+CreateList({Key key, this.userId, this.lists})
+      : super(key: key);
+  final String userId;
+  final List lists;
+
   @override
   CreateListState createState() => CreateListState();
 }
@@ -10,6 +16,7 @@ class CreateList extends StatefulWidget {
 class CreateListState extends State<CreateList> {
   String name;
   String level;
+  String formError;
   List<String> words = List.generate(10, (_) => "");
 
   List<Widget> getWords() {
@@ -32,6 +39,23 @@ class CreateListState extends State<CreateList> {
   @override
   Widget build(BuildContext context) {
     List<Widget> formCells = [
+      new Row(
+            children: <Widget>[
+              new Expanded(
+                child: new Padding(
+                  padding: const EdgeInsets.only(left: 20.0, bottom: 50.0),
+                  child: new Text(
+                    formError == null ? '' : formError,
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.lightGreen,
+                      fontSize: 15.0,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
       Container(
         margin: EdgeInsets.only(top: 15.0, bottom: 15.0),
         child: TextField(
@@ -80,19 +104,40 @@ class CreateListState extends State<CreateList> {
         ),
         floatingActionButton: Container(
           child: FloatingActionButton(
-            onPressed: () {
-              CollectionReference x = Firestore.instance.collection("Lists");
-              Firestore.instance.runTransaction((Transaction tx) async {
-                await x.add({
-                  "level": level,
-                  "name": name,
-                  "values": words,
+            onPressed: () async {
+              bool invalid = words.any((x) {
+               return x == null || x.length == 0;
+              });
+              if (level == '' || name == '' || words.length < 0 || invalid) {
+                  setState(() {
+                      formError = 'All the below fields should be completed';
+                  });
+                return;
+              }
+             
+             List newList = new List();
+                widget.lists.asMap().forEach((i, value) {
+                      newList.add(value);
                 });
+              newList.add({
+                        "level": level,
+                        "name": name,
+                        "order": widget.lists.length,
+                        "values": words,
+                      });
+              Firestore.instance.runTransaction((Transaction tx) async {
+                await Firestore.instance.collection("UserList").document(widget.userId).updateData({
+                   'lists': newList
+                 });
+              }
+              );
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => SpellHelperHome()),
+                  MaterialPageRoute(builder: (context) => SpellHelperHome(
+                    lists: newList,
+                    userId: widget.userId
+                  )),
                 );
-              });
             },
             child: Icon(Icons.save),
           ),
