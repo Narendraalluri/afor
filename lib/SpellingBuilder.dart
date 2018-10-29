@@ -136,7 +136,7 @@ class _SpellingBuilderState extends State<SpellingBuilder> {
                       ),
                     ),
                     Text(
-                      widget.index.toString() + ' of 10',
+                      (widget.index + 1).toString() + ' of 10',
                       style: TextStyle(
                         fontSize: 12.0,
                         color: Colors.black54,

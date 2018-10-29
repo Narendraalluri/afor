@@ -168,14 +168,18 @@ class _LoginScreen3State extends State<LoginScreen3>
       isLoading = true;
     });
     FirebaseUser currentUser = await _auth.currentUser();
+    print(currentUser);
     if (currentUser == null) {
+      await _googleSignIn.disconnect();
+      await _googleSignIn.signOut();
       final GoogleSignInAccount googleUser = await _googleSignIn.signIn();
-      final GoogleSignInAuthentication googleAuth =
-          await googleUser.authentication;
+      final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+       print(googleAuth);
           currentUser = await _auth.signInWithGoogle(
             accessToken: googleAuth.accessToken,
             idToken: googleAuth.idToken,
           );
+      
     } 
     getUserList(currentUser.uid);
   }
@@ -980,7 +984,7 @@ Widget resetPasswordPage() {
   loginView() {
     return Container(
             height: MediaQuery.of(context).size.height,
-            child: PageView(
+             child: PageView(
               controller: _controller,
               physics: new AlwaysScrollableScrollPhysics(),
               children: <Widget>[signupPage(), loginPage(), resetPasswordPage()],
