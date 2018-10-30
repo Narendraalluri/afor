@@ -82,14 +82,16 @@ class _SpellingBuilderState extends State<SpellingBuilder> {
   }
 
   onReveal() {
+    
+    for (int i = 0; i < selectedIndices.length; i++) {
+      onUnSelect(i);
+    }
     setState(() {
       selectedWord = "";
       selectedIndices = [];
       positions = new Map();
     });
-    for (int i = 0; i < selectedIndices.length; i++) {
-      onUnSelect(i);
-    }
+    widget.eventStreamController.add(Event('RESET'));
 
     var selected = "";
     for (int i = 0; i < widget.word.length; i++) {
@@ -97,13 +99,16 @@ class _SpellingBuilderState extends State<SpellingBuilder> {
         if (widget.word[i] == widget.options[j] &&
             !selected.contains(j.toString() + ",")) {
           selected += j.toString() + ",";
+          print(selected);
           new Future.delayed(Duration(milliseconds: i * 100), () {
             selectStreamController.add(j.toString());
+            print(j.toString());
           });
           break;
         }
       }
     }
+    
   }
 
   @override

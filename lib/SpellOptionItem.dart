@@ -60,6 +60,7 @@ class _SpellOptionItemState extends State<SpellOptionItem> with TickerProviderSt
     });
      widget.eventStreamController.stream.listen((data) {
       if (data.type == "RESET") {
+        print('RESET');
         moveAnimationController.reset();
       }
     }, onDone: () {

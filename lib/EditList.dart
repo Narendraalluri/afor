@@ -46,9 +46,9 @@ class EditListState extends State<EditList> {
                   labelText: 'Word ' + (index + 1).toString(),
                   hintText: 'Enter the word'),
               onChanged: (value) {
-                setState(() {
+               // setState(() {
                   words[index] = value;
-                });
+               // });
               },
             )));
   }

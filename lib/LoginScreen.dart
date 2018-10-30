@@ -87,6 +87,9 @@ class _LoginScreen3State extends State<LoginScreen3>
       return;
     }
     try {
+      setState(() {
+        isLoading = true;
+      });
       FirebaseUser currentUser = await _auth.signInWithEmailAndPassword(email: loginEmail, password: loginPassword);
       getUserList(currentUser.uid);
     } catch(e) {
@@ -111,6 +114,7 @@ class _LoginScreen3State extends State<LoginScreen3>
       return;
     }
     setState(() {
+        isLoading = true;
         formError = '';
       });
     try {
@@ -982,7 +986,8 @@ Widget resetPasswordPage() {
   }
 
   loginView() {
-    return Container(
+    return SingleChildScrollView(
+      child: Container(
             height: MediaQuery.of(context).size.height,
              child: PageView(
               controller: _controller,
@@ -990,7 +995,8 @@ Widget resetPasswordPage() {
               children: <Widget>[signupPage(), loginPage(), resetPasswordPage()],
               scrollDirection: Axis.horizontal,
             )
-          );
+          )
+    );
       }
 
 

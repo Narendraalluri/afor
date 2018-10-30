@@ -72,7 +72,9 @@ class CreateListState extends State<CreateList> {
             value: level,
             hint: Text('Select the Level'),
             onChanged: (value) {
-              level = value;
+              setState(() {
+                level = value;  
+              });
             },
             isDense: true,
             items: <String>[
