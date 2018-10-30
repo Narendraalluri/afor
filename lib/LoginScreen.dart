@@ -342,7 +342,7 @@ class _LoginScreen3State extends State<LoginScreen3>
             mainAxisAlignment: MainAxisAlignment.end,
             children: <Widget>[
               Padding(
-                padding: const EdgeInsets.only(right: 60.0),
+                padding: const EdgeInsets.only(right: 50.0),
                 child: new FlatButton(
                   child: new Text(
                     "Forgot Password?",
@@ -362,7 +362,7 @@ class _LoginScreen3State extends State<LoginScreen3>
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: <Widget>[
                   Padding(
-                    padding: const EdgeInsets.only(right: 20.0),
+                    padding: const EdgeInsets.only(right: 0.0),
                     child: new FlatButton(
                       child: new Text(
                         "New User?",
@@ -543,7 +543,7 @@ Widget resetPasswordPage() {
             padding: EdgeInsets.all(100.0),
             child: Center(
               child: Icon(
-                Icons.headset_mic,
+                Icons.school,
                 color: Colors.lightGreen,
                 size: 50.0,
               ),
@@ -558,7 +558,7 @@ Widget resetPasswordPage() {
                     formError,
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
-                      color: Colors.lightGreen,
+                      color: Colors.red,
                       fontSize: 15.0,
                     ),
                   ),
@@ -710,7 +710,7 @@ Widget resetPasswordPage() {
             padding: EdgeInsets.all(100.0),
             child: Center(
               child: Icon(
-                Icons.headset_mic,
+                Icons.school,
                 color: Colors.lightGreen,
                 size: 50.0,
               ),
@@ -725,7 +725,7 @@ Widget resetPasswordPage() {
                     formError,
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
-                      color: Colors.lightGreen,
+                      color: Colors.red,
                       fontSize: 15.0,
                     ),
                   ),
@@ -990,7 +990,7 @@ Widget resetPasswordPage() {
   loginView() {
     return SingleChildScrollView(
       child: Container(
-            height: MediaQuery.of(context).size.height,
+            height: MediaQuery.of(context).size.height + 200.0,
              child: PageView(
               controller: _controller,
               physics: new AlwaysScrollableScrollPhysics(),
