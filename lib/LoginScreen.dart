@@ -94,6 +94,7 @@ class _LoginScreen3State extends State<LoginScreen3>
       getUserList(currentUser.uid);
     } catch(e) {
       setState(() {
+        isLoading = false;
             formError = 'Error while logging in. Please try again';
          });
     }
@@ -122,6 +123,7 @@ class _LoginScreen3State extends State<LoginScreen3>
       getUserList(newUser.uid);
     } catch(e) {
       setState(() {
+        isLoading = false;
             formError = '!!!  Error while creating user. Please try again';
          });
     }
@@ -221,7 +223,7 @@ class _LoginScreen3State extends State<LoginScreen3>
                     formError,
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
-                      color: Colors.lightGreen,
+                      color: Colors.red,
                       fontSize: 15.0,
                     ),
                   ),
