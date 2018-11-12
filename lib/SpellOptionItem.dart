@@ -185,6 +185,8 @@ class _SpellOptionItemState extends State<SpellOptionItem> with TickerProviderSt
   }
 
   selectChar(index, left, bottom) {
-    moveAnimationController.forward(from: 0.0);
+    if(widget.selectedIndices.length < 14) {
+      moveAnimationController.forward(from: 0.0);
+    }
   }
 }

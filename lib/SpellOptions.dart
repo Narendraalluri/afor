@@ -72,7 +72,7 @@ class SpellOptions extends StatelessWidget {
   Widget build(BuildContext context) {
     var chunkSize = 4;
     var chunks = getChunks(options, chunkSize);
-    var numberOfColumns = 8;
+    var numberOfColumns = MediaQuery.of(context).size.width < 330 ? 7 : 8;
     int nextRow = (selectedIndices.length / numberOfColumns).floor();
     int nextColumn = selectedIndices.length % numberOfColumns;
     Offset nextPosition = Offset(10.0 + (nextColumn*40), (150.0 - scrollOffset)  + (nextRow*50));

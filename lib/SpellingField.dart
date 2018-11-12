@@ -21,7 +21,6 @@ class SpellingField extends StatelessWidget {
 
     return Container(
         margin: EdgeInsets.only(top: 40.0),
-        padding: EdgeInsets.all(20.0),
         width: MediaQuery.of(context).size.width,
         child: Column(
             children: List.generate(numberOfRows, (index) {

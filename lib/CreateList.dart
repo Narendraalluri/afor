@@ -87,7 +87,7 @@ class CreateListState extends State<CreateList> {
               return DropdownMenuItem<String>(
                 value: value,
                 child: Container(
-                    width: 300.0,
+                    width: MediaQuery.of(context).size.width - 65.0,
                     child: Text(
                       value,
                     )),
